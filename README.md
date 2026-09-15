@@ -12,26 +12,33 @@ Hire-ready **data engineering portfolio project**: end-to-end retail sales analy
 
 ---
 
-## Power BI Reports
+## Tableau Reports
 
-Full pipeline code **and** executive BI screenshots live in this repo — view the dashboards on GitHub without Power BI Desktop.
+**Primary BI tool: Tableau.** Full pipeline code **and** two Tableau workbooks live in this repo — view dashboards on GitHub without Tableau Desktop.
+
+### Workbook A — Sales Performance
+Executive KPIs, store/region performance, trends & channel mix.
 
 | Page | Preview |
 |------|---------|
-| Executive Overview | ![Executive Overview](reports/powerbi/screenshots/01_executive_overview.png) |
-| Store Performance | ![Store Performance](reports/powerbi/screenshots/02_store_performance.png) |
-| Category Trends | ![Category Trends](reports/powerbi/screenshots/03_category_trends.png) |
-| Customer LTV | ![Customer LTV](reports/powerbi/screenshots/04_customer_ltv.png) |
-| Product Rankings | ![Product Rankings](reports/powerbi/screenshots/05_product_rankings.png) |
-| Channel Mix | ![Channel Mix](reports/powerbi/screenshots/06_channel_mix.png) |
+| Overview | ![Sales Overview](tableau/screenshots/sales_performance_01_overview.png) |
+| Stores & Regions | ![Stores](tableau/screenshots/sales_performance_02_stores.png) |
+| Trends | ![Trends](tableau/screenshots/sales_performance_03_trends.png) |
 
-**Desktop recreation** (semantic model, DAX, page briefs, sample mart CSVs): [`powerbi/README.md`](powerbi/README.md)
+### Workbook B — Product & Customer Analysis
+Category mix, customer LTV/segments, product rankings.
 
-Regenerate screenshots from gold marts:
+| Page | Preview |
+|------|---------|
+| Categories | ![Categories](tableau/screenshots/product_customer_01_categories.png) |
+| Customer LTV | ![LTV](tableau/screenshots/product_customer_02_ltv.png) |
+| Product Rankings | ![Products](tableau/screenshots/product_customer_03_products.png) |
+
+**Desktop / Public rebuild** (workbook briefs, LOD calcs, sample mart CSVs): [`tableau/README.md`](tableau/README.md)
 
 ```bash
 python scripts/run_local.py --engine pandas
-python src/viz/generate_powerbi_pages.py --export-samples
+python src/viz/generate_tableau_pages.py --export-samples
 ```
 
 
@@ -158,13 +165,13 @@ retail-sales-pipeline/
 │   ├── generate_data.py
 │   ├── jobs/                 # bronze → silver → gold
 │   ├── quality/checks.py
+│   ├── viz/generate_tableau_pages.py
 │   └── utils/
 ├── dags/retail_sales_pipeline_dag.py
 ├── sql/                      # Snowflake-flavored DDL + marts
 ├── docs/architecture.md
 ├── docs/cloud_mapping.md
-├── powerbi/                  # semantic model, DAX, page briefs, sample marts
-├── reports/powerbi/screenshots/  # executive PNGs (render on GitHub)
+├── tableau/                  # workbook briefs, calcs, screenshots, sample marts
 ├── scripts/run_local.py
 └── tests/
 ```
