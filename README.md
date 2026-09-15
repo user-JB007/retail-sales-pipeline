@@ -12,6 +12,32 @@ Hire-ready **data engineering portfolio project**: end-to-end retail sales analy
 
 ---
 
+
+---
+
+## Power BI Reports
+
+Full pipeline code **and** executive BI screenshots live in this repo — view the dashboards on GitHub without Power BI Desktop.
+
+| Page | Preview |
+|------|---------|
+| Executive Overview | ![Executive Overview](reports/powerbi/screenshots/01_executive_overview.png) |
+| Store Performance | ![Store Performance](reports/powerbi/screenshots/02_store_performance.png) |
+| Category Trends | ![Category Trends](reports/powerbi/screenshots/03_category_trends.png) |
+| Customer LTV | ![Customer LTV](reports/powerbi/screenshots/04_customer_ltv.png) |
+| Product Rankings | ![Product Rankings](reports/powerbi/screenshots/05_product_rankings.png) |
+| Channel Mix | ![Channel Mix](reports/powerbi/screenshots/06_channel_mix.png) |
+
+**Desktop recreation** (semantic model, DAX, page briefs, sample mart CSVs): [`powerbi/README.md`](powerbi/README.md)
+
+Regenerate screenshots from gold marts:
+
+```bash
+python scripts/run_local.py --engine pandas
+python src/viz/generate_powerbi_pages.py --export-samples
+```
+
+
 ## Architecture
 
 ```mermaid
@@ -140,6 +166,8 @@ retail-sales-pipeline/
 ├── sql/                      # Snowflake-flavored DDL + marts
 ├── docs/architecture.md
 ├── docs/cloud_mapping.md
+├── powerbi/                  # semantic model, DAX, page briefs, sample marts
+├── reports/powerbi/screenshots/  # executive PNGs (render on GitHub)
 ├── scripts/run_local.py
 └── tests/
 ```

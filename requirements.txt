@@ -11,3 +11,7 @@ pyarrow>=14.0.0
 
 # Tests
 pytest>=7.0.0
+
+# Power BI–style report page screenshots
+matplotlib>=3.7.0
+seaborn>=0.13.0
