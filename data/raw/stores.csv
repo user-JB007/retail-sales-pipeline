@@ -1,0 +1,26 @@
+store_id,store_name,store_type,region,city,state,opened_date,square_footage,is_active
+STR001,New York Downtown #1,flagship,Northeast,New York,NY,2015-09-25,35280,True
+STR002,Boston Mall #2,outlet,Southeast,Boston,MA,2020-05-17,20871,True
+STR003,Atlanta Mall #3,express,Midwest,Atlanta,GA,2018-07-23,38919,True
+STR004,Miami Downtown #4,online,Southwest,Miami,FL,2015-09-15,31986,True
+STR005,Chicago Mall #5,flagship,West,Chicago,IL,2016-08-27,6049,True
+STR006,Detroit Mall #6,outlet,Northeast,Detroit,MI,2019-04-29,43951,True
+STR007,Dallas Downtown #7,express,Southeast,Dallas,TX,2021-01-16,34729,True
+STR008,Houston Mall #8,online,Midwest,Houston,TX,2020-11-22,35800,True
+STR009,Phoenix Mall #9,flagship,Southwest,Phoenix,AZ,2019-03-20,7508,True
+STR010,Denver Downtown #10,outlet,West,Denver,CO,2021-11-24,21366,True
+STR011,Los Angeles Mall #11,express,Northeast,Los Angeles,CA,2019-02-10,17944,True
+STR012,Seattle Mall #12,online,Southeast,Seattle,WA,2016-07-01,41850,True
+STR013,Portland Downtown #13,flagship,Midwest,Portland,OR,2021-06-02,29686,True
+STR014,San Francisco Mall #14,outlet,Southwest,San Francisco,CA,2018-04-22,37378,True
+STR015,Austin Mall #15,express,West,Austin,TX,2019-06-25,21066,True
+STR016,Nashville Downtown #16,online,Northeast,Nashville,TN,2018-09-13,11771,True
+STR017,Charlotte Mall #17,flagship,Southeast,Charlotte,NC,2015-10-04,25847,True
+STR018,Minneapolis Mall #18,outlet,Midwest,Minneapolis,MN,2022-04-17,4744,True
+STR019,Philadelphia Downtown #19,express,Southwest,Philadelphia,PA,2022-01-18,37588,True
+STR020,San Diego Mall #20,online,West,San Diego,CA,2017-04-10,29161,True
+STR021,Las Vegas Mall #21,flagship,Northeast,Las Vegas,NV,2016-05-10,34597,True
+STR022,Orlando Downtown #22,outlet,Southeast,Orlando,FL,2020-10-02,17244,True
+STR023,Kansas City Mall #23,express,Midwest,Kansas City,MO,2015-07-23,43740,True
+STR024,Salt Lake City Mall #24,online,Southwest,Salt Lake City,UT,2018-08-30,40404,False
+STR025,Raleigh Downtown #25,flagship,West,Raleigh,NC,2020-07-26,35470,False

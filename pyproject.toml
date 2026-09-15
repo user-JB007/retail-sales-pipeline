@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retail-sales-pipeline"
+version = "1.0.0"
+description = "Freelance portfolio: retail sales medallion pipeline (PySpark/pandas, Airflow, Snowflake SQL)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Freelance Data Engineer" }]
+dependencies = [
+  "pandas>=2.0.0,<3",
+  "numpy>=1.24.0,<3",
+  "pyarrow>=14.0.0",
+]
+
+[project.optional-dependencies]
+spark = ["pyspark>=3.4.0,<4"]
+airflow = ["apache-airflow>=2.7.0"]
+dev = ["pytest>=7.0.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

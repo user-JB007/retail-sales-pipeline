@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Spark / Java
+metastore_db/
+spark-warehouse/
+derby.log
+*.crc
+_SUCCESS
+
+# Airflow local
+airflow.db
+airflow.cfg
+logs/
+
+# Derived medallion layers (regenerate with scripts/run_local.py)
+data/bronze/
+data/silver/
+data/gold/
+
+# Keep a small sample snapshot for portfolio reviewers
+output/*
+!output/sample_outputs.json
+
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Secrets
+.env.local
+credentials.json
+**/secrets/

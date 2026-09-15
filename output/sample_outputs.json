@@ -1,0 +1,46 @@
+{
+  "top_stores_by_revenue": [
+    {
+      "store_name": "Detroit Mall #6",
+      "net_revenue": 254924.25
+    },
+    {
+      "store_name": "Kansas City Mall #23",
+      "net_revenue": 246076.03
+    },
+    {
+      "store_name": "Austin Mall #15",
+      "net_revenue": 242571.93
+    },
+    {
+      "store_name": "San Diego Mall #20",
+      "net_revenue": 241962.2
+    },
+    {
+      "store_name": "Las Vegas Mall #21",
+      "net_revenue": 235028.94
+    }
+  ],
+  "top_categories": [
+    {
+      "category": "Sports",
+      "net_revenue": 1193769.48
+    },
+    {
+      "category": "Apparel",
+      "net_revenue": 1045455.01
+    },
+    {
+      "category": "Electronics",
+      "net_revenue": 1000078.07
+    },
+    {
+      "category": "Grocery",
+      "net_revenue": 979345.32
+    },
+    {
+      "category": "Home",
+      "net_revenue": 847281.79
+    }
+  ]
+}

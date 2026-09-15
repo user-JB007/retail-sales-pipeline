@@ -1,0 +1,13 @@
+# Core demo path (pandas) — enough for scripts/run_local.py
+pandas>=2.0.0,<3
+numpy>=1.24.0,<3
+pyarrow>=14.0.0
+
+# Optional: PySpark for production-shaped jobs (requires Java)
+# pyspark>=3.4.0,<4
+
+# Orchestration reference (DAG imports airflow when deployed)
+# apache-airflow>=2.7.0
+
+# Tests
+pytest>=7.0.0

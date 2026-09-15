@@ -1,0 +1,47 @@
+# Pipeline configuration (no secrets)
+project:
+  name: retail-sales-pipeline
+  timezone: UTC
+
+paths:
+  raw: data/raw
+  bronze: data/bronze
+  silver: data/silver
+  gold: data/gold
+
+ingest:
+  source_system: retail_pos_demo
+  tables:
+    - stores
+    - products
+    - customers
+    - sales_transactions
+
+quality:
+  fail_on_error: true
+  allowed_channels:
+    - in_store
+    - online
+    - mobile_app
+  allowed_payment_methods:
+    - credit_card
+    - debit_card
+    - cash
+    - mobile_pay
+    - gift_card
+
+gold_marts:
+  - mart_daily_sales_by_store
+  - mart_daily_sales_by_category
+  - mart_customer_lifetime_value
+  - mart_product_performance
+  - mart_channel_mix
+
+spark:
+  master: local[*]
+  shuffle_partitions: 4
+  driver_memory: 2g
+
+airflow:
+  dag_id: retail_sales_medallion_pipeline
+  schedule: "0 6 * * *"
