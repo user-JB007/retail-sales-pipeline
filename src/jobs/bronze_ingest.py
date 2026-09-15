@@ -1,7 +1,7 @@
 """Bronze layer: land raw files as-is with ingest metadata.
 
 Reads CSV/Parquet from data/raw and writes parquet to data/bronze.
-Prefers PySpark; falls back to pandas when Spark is unavailable (CI / lightweight demos).
+Prefers PySpark; falls back to pandas when Spark is unavailable (CI / local runs).
 """
 
 from __future__ import annotations
@@ -22,13 +22,14 @@ RAW_TABLES = {
     "products": "products.csv",
     "customers": "customers.csv",
     "sales_transactions": "sales_transactions.csv",
+    "service_tickets": "service_tickets.csv",
 }
 
 
 def _ingest_meta() -> dict:
     return {
         "_ingest_ts": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
-        "_source_system": "retail_pos_demo",
+        "_source_system": "retail_ops",
         "_pipeline_run_id": datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S"),
     }
 
@@ -41,7 +42,7 @@ def ingest_pandas(raw: Path, bronze: Path) -> dict:
         src = raw / filename
         if not src.exists():
             raise FileNotFoundError(
-                f"Missing raw file: {src}. Run: python -m src.generate_data"
+                f"Missing raw file: {src}. Run: python -m src.generate_source_data"
             )
         df = pd.read_csv(src)
         for k, v in meta.items():

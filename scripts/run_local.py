@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-command local demo: generate data → bronze → silver → gold."""
+"""One-command local run: generate source data → bronze → silver → gold."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ if str(ROOT) not in sys.path:
 def main():
     parser = argparse.ArgumentParser(description="Run full retail sales pipeline locally")
     parser.add_argument("--engine", choices=["auto", "spark", "pandas"], default="pandas",
-                        help="Transform engine (default pandas for zero-setup demos)")
+                        help="Transform engine (default pandas for local runs)")
     parser.add_argument("--n-transactions", type=int, default=5000)
     parser.add_argument("--skip-generate", action="store_true")
     args = parser.parse_args()
@@ -27,8 +27,8 @@ def main():
         os.environ["FORCE_PANDAS"] = "1"
 
     if not args.skip_generate:
-        print("=== 1/4 Generate synthetic raw data ===")
-        from src.generate_data import main as gen
+        print("=== 1/4 Generate source extracts ===")
+        from src.generate_source_data import main as gen
         gen(n_txns=args.n_transactions)
     else:
         print("=== 1/4 Skip generate (using existing data/raw) ===")
@@ -45,10 +45,10 @@ def main():
     from src.jobs.gold_aggregates import run as gold
     result = gold(engine=args.engine)
 
-    sample = ROOT / "data" / "gold" / "sample_outputs.json"
-    if sample.exists():
-        print("\n=== Sample outputs ===")
-        print(sample.read_text())
+    summary = ROOT / "data" / "gold" / "pipeline_outputs.json"
+    if summary.exists():
+        print("\n=== Pipeline outputs ===")
+        print(summary.read_text())
 
     print("\nPipeline finished successfully.")
     print(f"Gold marts: {json.dumps(result.get('marts', {}), indent=2)}")

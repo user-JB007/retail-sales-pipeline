@@ -10,7 +10,7 @@ paths:
   gold: data/gold
 
 ingest:
-  source_system: retail_pos_demo
+  source_system: retail_ops
   tables:
     - stores
     - products

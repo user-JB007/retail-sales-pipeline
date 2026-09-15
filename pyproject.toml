@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "retail-sales-pipeline"
 version = "1.0.0"
-description = "Freelance portfolio: retail sales medallion pipeline (PySpark/pandas, Airflow, Snowflake SQL)"
+description = "Analytics project: retail sales medallion pipeline (PySpark/pandas, Airflow, Snowflake SQL)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

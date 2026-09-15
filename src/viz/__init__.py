@@ -1,1 +1,1 @@
-"""Visualization helpers for portfolio Power BI-style report pages."""
+"""Visualization helpers for project Power BI-style report pages."""

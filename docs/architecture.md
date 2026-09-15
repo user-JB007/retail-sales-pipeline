@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a classic **medallion (bronze / silver / gold)** retail sales pipeline suitable for portfolio review and as a template for freelance client work.
+This project implements a classic **medallion (bronze / silver / gold)** retail sales pipeline suitable for design review and as a template for freelance client work.
 
 | Layer | Purpose | Contents |
 |-------|---------|----------|
@@ -15,18 +15,18 @@ This project implements a classic **medallion (bronze / silver / gold)** retail 
 ## Local runtime flow
 
 ```
-generate_data → bronze_ingest → silver_transform (+ DQ) → gold_aggregates
+generate_source_data → bronze_ingest → silver_transform (+ DQ) → gold_aggregates
                      ↑                    ↑
               data/raw/*           quarantine + manifests
 ```
 
-Orchestration is expressed as an **Apache Airflow DAG** (`dags/retail_sales_pipeline_dag.py`) with the same task graph. For zero-setup demos, run `python scripts/run_local.py`.
+Orchestration is expressed as an **Apache Airflow DAG** (`dags/retail_sales_pipeline_dag.py`) with the same task graph. For a local run, execute `python scripts/run_local.py`.
 
 ## Engine strategy
 
 - **Preferred:** PySpark job structure (session helper, bronze write as parquet directories).
 - **Default local/CI path:** pandas fallback via `FORCE_PANDAS=1` or `--engine pandas`.
-- Same layer boundaries and DQ checks regardless of engine — hiring managers see production-shaped jobs without requiring a Spark cluster.
+- Same layer boundaries and DQ checks regardless of engine — the job graph stays production-shaped without requiring a Spark cluster.
 
 ## Data quality
 
@@ -46,11 +46,11 @@ Invalid rows are written to `data/silver/quarantine_sales` instead of silently d
 `sql/` contains Snowflake-style:
 
 1. Database / schema creation  
-2. Dimension DDL (+ demo `DIM_DATE` seed)  
+2. Dimension DDL (+ `DIM_DATE` seed)  
 3. Fact + quarantine DDL with clustering hint  
 4. Gold mart CTAS / views  
 
-These scripts are documentation-as-code for warehouse design reviews; they are not executed in the local pandas demo.
+These scripts are documentation-as-code for warehouse design reviews; they document warehouse design; local runs use the Python jobs.
 
 ## Cloud platform mapping
 
@@ -63,3 +63,8 @@ See [cloud_mapping.md](./cloud_mapping.md) for how the same pipeline maps to **A
 - Great Expectations or Soda as dedicated DQ runners  
 - Incremental loads partitioned by `transaction_date`  
 - Row-level security on gold views for multi-tenant retail brands  
+
+
+## Service data
+
+Raw `service_tickets` land in bronze, clean as `fact_service_tickets` in silver, and publish as gold `mart_service_performance` for the Customer Satisfaction & Service Tableau workbook.

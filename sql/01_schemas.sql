@@ -11,7 +11,7 @@ CREATE SCHEMA IF NOT EXISTS SILVER COMMENT = 'Cleaned, conformed, DQ-gated entit
 CREATE SCHEMA IF NOT EXISTS GOLD   COMMENT = 'Business marts for BI and self-serve';
 CREATE SCHEMA IF NOT EXISTS RAW    COMMENT = 'External stage / file landing metadata';
 
--- File format for CSV ingest demos
+-- File format for CSV ingest paths
 CREATE OR REPLACE FILE FORMAT RETAIL_ANALYTICS.RAW.CSV_FF
   TYPE = CSV
   SKIP_HEADER = 1

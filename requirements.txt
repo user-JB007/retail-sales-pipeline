@@ -1,4 +1,4 @@
-# Core demo path (pandas) — enough for scripts/run_local.py
+# Core path (pandas) — enough for scripts/run_local.py
 pandas>=2.0.0,<3
 numpy>=1.24.0,<3
 pyarrow>=14.0.0

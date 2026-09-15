@@ -124,6 +124,39 @@ def transform_fact(bronze: Path, dims: dict[str, pd.DataFrame]) -> tuple[pd.Data
     return clean, quarantine
 
 
+
+def transform_service_tickets(bronze: Path, dims: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Clean service tickets and derive SLA / aging metrics."""
+    tix = _read_bronze_table(bronze, "service_tickets")
+    tix = tix.drop(columns=[c for c in tix.columns if c.startswith("_")], errors="ignore")
+    tix["opened_at"] = pd.to_datetime(tix["opened_at"])
+    tix["sla_due_at"] = pd.to_datetime(tix["sla_due_at"])
+    tix["resolved_at"] = pd.to_datetime(tix["resolved_at"], errors="coerce")
+    tix["csat"] = pd.to_numeric(tix["csat"], errors="coerce")
+    tix["resolve_hours"] = pd.to_numeric(tix["resolve_hours"], errors="coerce")
+
+    as_of = tix["opened_at"].max() + pd.Timedelta(days=1)
+    open_mask = tix["status"].isin(["pending", "escalated"]) | tix["resolved_at"].isna()
+    tix["is_open"] = open_mask.astype(int)
+    tix["age_hours"] = (
+        (tix["resolved_at"].fillna(as_of) - tix["opened_at"]).dt.total_seconds() / 3600
+    ).round(2)
+    tix["sla_breach"] = (
+        (~open_mask & (tix["resolved_at"] > tix["sla_due_at"]))
+        | (open_mask & (as_of > tix["sla_due_at"]))
+    )
+    tix["sla_status"] = "within_sla"
+    tix.loc[tix["sla_breach"], "sla_status"] = "beyond_sla"
+    tix.loc[open_mask & ~tix["sla_breach"], "sla_status"] = "pending_within_sla"
+    tix.loc[open_mask & tix["sla_breach"], "sla_status"] = "pending_beyond_sla"
+    tix["opened_date"] = tix["opened_at"].dt.date.astype(str)
+
+    # Keep only tickets with known stores when possible
+    valid_stores = set(dims["dim_store_all"]["store_id"])
+    tix = tix[tix["store_id"].isin(valid_stores)].copy()
+    return tix
+
+
 def run_dq(dims: dict[str, pd.DataFrame], fact: pd.DataFrame) -> dict:
     checks = [
         check_not_empty(fact, "fact_not_empty"),
@@ -154,6 +187,7 @@ def run(engine: str = "auto") -> dict:
 
     dims = transform_dims(bronze)
     fact, quarantine = transform_fact(bronze, dims)
+    service = transform_service_tickets(bronze, dims)
     dq = run_dq(dims, fact)
 
     for name, df in [
@@ -162,6 +196,7 @@ def run(engine: str = "auto") -> dict:
         ("dim_customer", dims["dim_customer"]),
         ("fact_sales", fact),
         ("quarantine_sales", quarantine),
+        ("fact_service_tickets", service),
     ]:
         out = silver / name
         out.mkdir(parents=True, exist_ok=True)
@@ -172,12 +207,13 @@ def run(engine: str = "auto") -> dict:
     manifest = {
         "layer": "silver",
         "fact_rows": len(fact),
+        "service_ticket_rows": len(service),
         "quarantine_rows": len(quarantine),
         "dq": dq,
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
     (silver / "_manifest.json").write_text(json.dumps(manifest, indent=2, default=str))
-    print(f"Silver transform complete. Quarantined {len(quarantine)} rows.")
+    print(f"Silver transform complete. Quarantined {len(quarantine)} rows. Service tickets: {len(service)}.")
     return manifest
 
 

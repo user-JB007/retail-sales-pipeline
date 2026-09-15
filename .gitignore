@@ -32,9 +32,8 @@ data/bronze/
 data/silver/
 data/gold/
 
-# Keep a small sample snapshot for portfolio reviewers
-output/*
-!output/sample_outputs.json
+# Local output scratch
+output/
 
 *.log
 

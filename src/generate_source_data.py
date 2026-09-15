@@ -1,10 +1,11 @@
-"""Generate synthetic retail sales data for the portfolio demo.
+"""Generate source extracts for the retail sales & service analytics pipeline.
 
-Produces demo-sized CSVs under data/raw/:
+Produces operational CSVs under data/raw/:
   - stores.csv
   - products.csv
   - customers.csv
   - sales_transactions.csv
+  - service_tickets.csv
 """
 
 from __future__ import annotations
@@ -29,6 +30,21 @@ CATEGORIES = {
 }
 PAYMENT_METHODS = ["credit_card", "debit_card", "cash", "mobile_pay", "gift_card"]
 CHANNELS = ["in_store", "online", "mobile_app"]
+
+SERVICE_REASONS = [
+    "Product defect",
+    "Late delivery",
+    "Wrong item",
+    "Refund request",
+    "Pricing dispute",
+    "Staff conduct",
+    "Store experience",
+    "Online order issue",
+]
+SERVICE_CHANNELS = ["phone", "email", "chat", "in_store", "social"]
+SERVICE_STATUSES = ["resolved", "pending", "escalated", "closed_unresolved"]
+# SLA hours by priority
+SLA_HOURS = {"critical": 4, "high": 24, "medium": 72, "low": 168}
 
 
 def _project_root() -> Path:
@@ -143,7 +159,7 @@ def generate_transactions(
         gross = round(unit_price * qty, 2)
         discount_amt = round(gross * discount_pct, 2)
         net = round(gross - discount_amt, 2)
-        # Inject a few intentional DQ issues for silver layer to catch/fix
+        # Inject a few intentional DQ issues for silver layer to catch
         bad_row = i % 487 == 0
         rows.append(
             {
@@ -165,7 +181,95 @@ def generate_transactions(
     return pd.DataFrame(rows)
 
 
-def main(output_dir: Path | None = None, n_txns: int = 5000) -> dict[str, Path]:
+def generate_service_tickets(
+    stores: pd.DataFrame,
+    customers: pd.DataFrame,
+    n: int = 1800,
+    start: str = "2024-01-01",
+    end: str = "2024-12-31",
+) -> pd.DataFrame:
+    """Seed customer service / complaint tickets with SLA clocks and CSAT."""
+    start_dt = datetime.strptime(start, "%Y-%m-%d")
+    end_dt = datetime.strptime(end, "%Y-%m-%d")
+    days = (end_dt - start_dt).days
+    active_stores = stores[stores["is_active"]]["store_id"].tolist()
+    active_customers = customers[customers["is_active"]]["customer_id"].tolist()
+    priorities = ["low", "medium", "high", "critical"]
+    priority_p = [0.35, 0.40, 0.18, 0.07]
+
+    rows = []
+    for i in range(1, n + 1):
+        opened = start_dt + timedelta(
+            days=int(RNG.integers(0, days)),
+            hours=int(RNG.integers(7, 21)),
+            minutes=int(RNG.integers(0, 60)),
+        )
+        priority = str(RNG.choice(priorities, p=priority_p))
+        sla_hours = SLA_HOURS[priority]
+        sla_due = opened + timedelta(hours=sla_hours)
+
+        # Resolution behavior: most resolve; some pending / late
+        roll = float(RNG.random())
+        if roll < 0.12:
+            status = "pending"
+            resolved = None
+            resolve_hours = None
+            csat = None
+        elif roll < 0.18:
+            status = "escalated"
+            # Still open but aged
+            resolved = None
+            resolve_hours = None
+            csat = None
+        else:
+            # Resolve within or beyond SLA
+            if RNG.random() < 0.78:
+                # Within SLA
+                resolve_hours = float(RNG.uniform(0.5, sla_hours * 0.95))
+                status = "resolved"
+            else:
+                resolve_hours = float(RNG.uniform(sla_hours * 1.05, sla_hours * 2.8))
+                status = RNG.choice(["resolved", "closed_unresolved"], p=[0.85, 0.15])
+            resolved = opened + timedelta(hours=resolve_hours)
+            # CSAT 1–5; late tickets score lower
+            if status == "closed_unresolved":
+                csat = int(RNG.choice([1, 2, 3], p=[0.45, 0.35, 0.20]))
+            elif resolve_hours <= sla_hours:
+                csat = int(RNG.choice([3, 4, 5], p=[0.15, 0.40, 0.45]))
+            else:
+                csat = int(RNG.choice([1, 2, 3, 4], p=[0.20, 0.30, 0.35, 0.15]))
+
+        within_sla = None
+        if resolved is not None:
+            within_sla = resolved <= sla_due
+        elif status in ("pending", "escalated"):
+            within_sla = None  # open — evaluated vs now in marts
+
+        store_id = active_stores[int(RNG.integers(0, len(active_stores)))]
+        rows.append(
+            {
+                "ticket_id": f"TKT{i:06d}",
+                "opened_at": opened.strftime("%Y-%m-%d %H:%M:%S"),
+                "resolved_at": resolved.strftime("%Y-%m-%d %H:%M:%S") if resolved else None,
+                "sla_due_at": sla_due.strftime("%Y-%m-%d %H:%M:%S"),
+                "status": status,
+                "priority": priority,
+                "reason": str(RNG.choice(SERVICE_REASONS)),
+                "channel": str(RNG.choice(SERVICE_CHANNELS)),
+                "store_id": store_id,
+                "customer_id": active_customers[int(RNG.integers(0, len(active_customers)))],
+                "csat": csat,
+                "resolve_hours": round(resolve_hours, 2) if resolve_hours is not None else None,
+                "within_sla": within_sla,
+            }
+        )
+    df = pd.DataFrame(rows)
+    store_region = stores.set_index("store_id")["region"].to_dict()
+    df["region"] = df["store_id"].map(store_region)
+    return df
+
+
+def main(output_dir: Path | None = None, n_txns: int = 5000, n_tickets: int = 1800) -> dict[str, Path]:
     out = output_dir or (_project_root() / "data" / "raw")
     out.mkdir(parents=True, exist_ok=True)
 
@@ -173,28 +277,36 @@ def main(output_dir: Path | None = None, n_txns: int = 5000) -> dict[str, Path]:
     products = generate_products()
     customers = generate_customers()
     txns = generate_transactions(stores, products, customers, n=n_txns)
+    tickets = generate_service_tickets(stores, customers, n=n_tickets)
 
     paths = {
         "stores": out / "stores.csv",
         "products": out / "products.csv",
         "customers": out / "customers.csv",
         "sales_transactions": out / "sales_transactions.csv",
+        "service_tickets": out / "service_tickets.csv",
     }
     stores.to_csv(paths["stores"], index=False)
     products.to_csv(paths["products"], index=False)
     customers.to_csv(paths["customers"], index=False)
     txns.to_csv(paths["sales_transactions"], index=False)
+    tickets.to_csv(paths["service_tickets"], index=False)
 
-    # Also write a compact parquet for Spark-friendly ingest demos
+    # Compact parquet for Spark-friendly ingest
     txns.to_parquet(out / "sales_transactions.parquet", index=False)
+    tickets.to_parquet(out / "service_tickets.parquet", index=False)
 
-    print(f"Wrote {len(stores)} stores, {len(products)} products, {len(customers)} customers, {len(txns)} transactions -> {out}")
+    print(
+        f"Wrote {len(stores)} stores, {len(products)} products, {len(customers)} customers, "
+        f"{len(txns)} transactions, {len(tickets)} service tickets -> {out}"
+    )
     return paths
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate synthetic retail sales data")
+    parser = argparse.ArgumentParser(description="Generate retail source extracts (sales + service)")
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--n-transactions", type=int, default=5000)
+    parser.add_argument("--n-tickets", type=int, default=1800)
     args = parser.parse_args()
-    main(args.output_dir, args.n_transactions)
+    main(args.output_dir, args.n_transactions, args.n_tickets)

@@ -1,46 +1,41 @@
 # Retail Sales Medallion Pipeline
 
-Hire-ready **data engineering portfolio project**: end-to-end retail sales analytics using a bronze → silver → gold (medallion) architecture, with Airflow orchestration, Snowflake-flavored SQL marts, and cloud mapping docs for Azure Data Factory / Databricks / ADLS / Microsoft Fabric.
+End-to-end retail sales and customer-service analytics on a bronze → silver → gold (medallion) lakehouse layout, with Airflow orchestration, Snowflake-flavored SQL marts, Tableau workbooks, and cloud mapping notes for Azure Data Factory / Databricks / ADLS / Microsoft Fabric.
 
 **Repo:** [github.com/user-JB007/retail-sales-pipeline](https://github.com/user-JB007/retail-sales-pipeline)
 
 ---
 
-## Portfolio blurb
-
-> Built a production-shaped retail sales pipeline that lands POS-style extracts into a medallion lakehouse layout, enforces data-quality gates (nulls, FKs, enums, positive amounts), quarantines bad rows, and publishes gold marts for store performance, category trends, customer LTV, and channel mix. Orchestration is expressed as an Airflow DAG; warehouse design is documented with Snowflake DDL; the same pattern maps to ADF + Databricks + Fabric for client delivery conversations. Runs locally with pandas in one command; PySpark job structure is ready when a cluster is available.
-
----
-
 ## Tableau Reports
 
-**Primary BI tool: Tableau.** Full pipeline code **and** two Tableau workbooks live in this repo — view dashboards on GitHub without Tableau Desktop.
+**Primary BI tool: Tableau.** Pipeline code and two Tableau workbooks live in this repo — dashboard pages are visible on GitHub without Tableau Desktop.
 
-### Workbook A — Sales Performance
-Executive KPIs, store/region performance, trends & channel mix.
-
-| Page | Preview |
-|------|---------|
-| Overview | ![Sales Overview](tableau/screenshots/sales_performance_01_overview.png) |
-| Stores & Regions | ![Stores](tableau/screenshots/sales_performance_02_stores.png) |
-| Trends | ![Trends](tableau/screenshots/sales_performance_03_trends.png) |
-
-### Workbook B — Product & Customer Analysis
-Category mix, customer LTV/segments, product rankings.
+### Report 1 — Sales Report
+Revenue, orders, stores/regions, categories/products, and trends.
 
 | Page | Preview |
 |------|---------|
-| Categories | ![Categories](tableau/screenshots/product_customer_01_categories.png) |
-| Customer LTV | ![LTV](tableau/screenshots/product_customer_02_ltv.png) |
-| Product Rankings | ![Products](tableau/screenshots/product_customer_03_products.png) |
+| Overview | ![Sales Overview](tableau/screenshots/sales_01_overview.png) |
+| Stores & Regions | ![Stores](tableau/screenshots/sales_02_stores.png) |
+| Trends | ![Trends](tableau/screenshots/sales_03_trends.png) |
 
-**Desktop / Public rebuild** (workbook briefs, LOD calcs, sample mart CSVs): [`tableau/README.md`](tableau/README.md)
+### Report 2 — Customer Satisfaction & Service Report
+Complaints and service tickets: CSAT, resolutions within/beyond SLA, pending queue, aging, reason and channel breakdowns.
+
+| Page | Preview |
+|------|---------|
+| Overview | ![Service Overview](tableau/screenshots/service_01_overview.png) |
+| SLA Performance | ![SLA](tableau/screenshots/service_02_sla.png) |
+| Pending & Aging | ![Pending](tableau/screenshots/service_03_pending_aging.png) |
+
+**Desktop / Public rebuild** (workbook briefs, LOD calcs, mart CSVs): [`tableau/README.md`](tableau/README.md)
 
 ```bash
 python scripts/run_local.py --engine pandas
-python src/viz/generate_tableau_pages.py --export-samples
+python src/viz/generate_tableau_pages.py --export-marts
 ```
 
+---
 
 ## Architecture
 
@@ -80,10 +75,10 @@ flowchart LR
 
 | Layer | What it does |
 |-------|----------------|
-| **Raw** | Synthetic stores, products, customers, transactions (demo-sized) |
+| **Raw** | Stores, products, customers, sales transactions, service tickets |
 | **Bronze** | Parquet landing with `_ingest_ts`, `_source_system`, run id |
-| **Silver** | Typed dims/facts, quarantine invalid rows, DQ report |
-| **Gold** | Daily store/category sales, CLV, product performance, channel mix |
+| **Silver** | Typed dims/facts (sales + service), quarantine invalid rows, DQ report |
+| **Gold** | Daily store/category sales, CLV, product performance, channel mix, service/SLA mart |
 | **SQL** | Snowflake-flavored schemas, dims, facts, gold CTAS/views |
 
 ---
@@ -97,6 +92,7 @@ flowchart LR
 | Orchestration | Apache Airflow DAG (`dags/`) |
 | Warehouse | Snowflake-flavored DDL + marts (`sql/`) |
 | Quality | Custom DQ checks with fail-on-error gate |
+| BI | Tableau workbooks + screenshots (`tableau/`) |
 | Cloud design | ADF, Databricks, ADLS, Fabric — see `docs/cloud_mapping.md` |
 
 ---
@@ -110,18 +106,18 @@ cd retail-sales-pipeline
 python -m venv .venv && source .venv/bin/activate   # optional
 pip install -r requirements.txt
 
-# 2. Run the full demo (generate → bronze → silver → gold)
+# 2. Run the full pipeline (generate → bronze → silver → gold)
 python scripts/run_local.py --engine pandas
 
 # 3. Inspect outputs
 ls data/gold/*/data.csv
-cat data/gold/sample_outputs.json
+cat data/gold/pipeline_outputs.json
 ```
 
-Regenerate raw data only:
+Regenerate raw extracts only:
 
 ```bash
-python -m src.generate_data --n-transactions 5000
+python -m src.generate_source_data --n-transactions 5000 --n-tickets 1800
 ```
 
 Run layers individually:
@@ -160,9 +156,9 @@ retail-sales-pipeline/
 ├── requirements.txt / pyproject.toml
 ├── .env.example
 ├── config/pipeline.yaml
-├── data/raw/                 # demo CSVs + parquet (committed)
+├── data/raw/                 # source CSVs + parquet (committed)
 ├── src/
-│   ├── generate_data.py
+│   ├── generate_source_data.py
 │   ├── jobs/                 # bronze → silver → gold
 │   ├── quality/checks.py
 │   ├── viz/generate_tableau_pages.py
@@ -171,7 +167,7 @@ retail-sales-pipeline/
 ├── sql/                      # Snowflake-flavored DDL + marts
 ├── docs/architecture.md
 ├── docs/cloud_mapping.md
-├── tableau/                  # workbook briefs, calcs, screenshots, sample marts
+├── tableau/                  # workbook briefs, calcs, screenshots, marts
 ├── scripts/run_local.py
 └── tests/
 ```
@@ -180,27 +176,28 @@ Derived `data/bronze|silver|gold` are produced locally and gitignored.
 
 ---
 
-## Sample outputs
+## Gold marts
 
 After `run_local.py`, gold marts include:
 
-- `mart_daily_sales_by_store` — revenue, units, margin by store/day  
-- `mart_daily_sales_by_category` — category trends  
-- `mart_customer_lifetime_value` — order count, LTV, AOV by loyalty tier  
-- `mart_product_performance` — top products by net revenue  
-- `mart_channel_mix` — channel × payment method  
+- `mart_daily_sales_by_store` — revenue, units, margin by store/day
+- `mart_daily_sales_by_category` — category trends
+- `mart_customer_lifetime_value` — order count, LTV, AOV by loyalty tier
+- `mart_product_performance` — top products by net revenue
+- `mart_channel_mix` — channel × payment method
+- `mart_service_performance` — tickets with SLA clocks, CSAT, pending/aging
 
-Silver also writes `quarantine_sales` for intentionally injected bad rows (orphan stores, negative qty, null amounts) so reviewers can see DQ behavior.
+Silver also writes `quarantine_sales` for intentionally injected bad rows (orphan stores, negative qty, null amounts) so DQ behavior is auditable.
 
 ---
 
-## Design notes for hiring managers / clients
+## Design notes
 
-- **Fail-closed DQ** in silver — pipeline raises if critical checks fail.  
-- **Quarantine path** keeps bad rows auditable instead of silent drops.  
-- **Engine switch** (`--engine pandas|spark|auto`) shows cluster-ready structure without blocking demos.  
-- **SQL + cloud docs** bridge lakehouse code to warehouse and Azure/Fabric delivery.  
-- **No secrets** — `.env.example` lists placeholders only.
+- **Fail-closed DQ** in silver — pipeline raises if critical checks fail.
+- **Quarantine path** keeps bad rows auditable instead of silent drops.
+- **Engine switch** (`--engine pandas|spark|auto`) keeps cluster-ready structure while allowing local runs.
+- **SQL + cloud docs** bridge lakehouse code to warehouse and Azure/Fabric delivery.
+- **No secrets** — `.env.example` lists environment variable names only.
 
 More detail: [`docs/architecture.md`](docs/architecture.md) · [`docs/cloud_mapping.md`](docs/cloud_mapping.md)
 
@@ -208,4 +205,4 @@ More detail: [`docs/architecture.md`](docs/architecture.md) · [`docs/cloud_mapp
 
 ## License
 
-MIT — feel free to fork as a starting template for client POCs.
+MIT

@@ -4,9 +4,9 @@ Airflow DAG: Retail Sales Medallion Pipeline
 Orchestrates bronze → silver → gold with clear task dependencies.
 Designed to run locally with Astro / MWAA / Composer / standalone Airflow.
 
-Usage (local demo without full Airflow):
+Usage (local run without full Airflow):
   The same jobs are invoked by scripts/run_local.py.
-  This DAG mirrors that sequence for production orchestration demos.
+  This DAG mirrors that sequence for production orchestration.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ DEFAULT_ARGS = {
 
 
 def _run_generate():
-    from src.generate_data import main as gen
+    from src.generate_source_data import main as gen
     gen()
 
 
@@ -61,14 +61,14 @@ with DAG(
     schedule="0 6 * * *",  # daily 06:00 UTC
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["retail", "medallion", "pyspark", "portfolio"],
+    tags=["retail", "medallion", "pyspark", "analytics"],
     max_active_runs=1,
 ) as dag:
 
     generate_raw = PythonOperator(
         task_id="generate_or_refresh_raw",
         python_callable=_run_generate,
-        doc_md="Refresh synthetic raw extracts (replace with S3/ADLS ingest in prod).",
+        doc_md="Refresh source extracts (replace with S3/ADLS ingest in prod).",
     )
 
     bronze = PythonOperator(

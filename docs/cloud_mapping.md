@@ -51,7 +51,7 @@ ADLS raw  --(Autoloader)-->  bronze Delta
 | Warehouse | Gold marts via T-SQL (adapt Snowflake DDL) |
 | Power BI | Semantic model on gold tables / Direct Lake |
 
-## Sample ADF pipeline JSON (illustrative)
+## Example ADF pipeline JSON
 
 ```json
 {

@@ -6,6 +6,7 @@ Marts:
   - mart_customer_lifetime_value
   - mart_product_performance
   - mart_channel_mix
+  - mart_service_performance
 """
 
 from __future__ import annotations
@@ -66,7 +67,7 @@ def build_marts() -> dict[str, pd.DataFrame]:
         )
     )
 
-    # Guest customer placeholder excluded from CLV
+    # Guest customer rows excluded from CLV
     clv_base = fact[fact["customer_id"] != "CUS00000"]
     clv = (
         clv_base.groupby("customer_id", as_index=False)
@@ -104,12 +105,27 @@ def build_marts() -> dict[str, pd.DataFrame]:
         )
     )
 
+    # Service / CSAT performance mart
+    service = _read_silver("fact_service_tickets")
+    store_lookup = stores[["store_id", "store_name", "store_type"]].drop_duplicates("store_id")
+    service = service.merge(store_lookup, on="store_id", how="left")
+    keep_cols = [
+        c for c in [
+            "ticket_id", "opened_at", "resolved_at", "sla_due_at", "opened_date",
+            "status", "priority", "reason", "channel", "store_id", "store_name",
+            "region", "customer_id", "csat", "resolve_hours", "age_hours",
+            "is_open", "sla_breach", "sla_status",
+        ] if c in service.columns
+    ]
+    service_perf = service[keep_cols].copy()
+
     return {
         "mart_daily_sales_by_store": daily_store,
         "mart_daily_sales_by_category": daily_category,
         "mart_customer_lifetime_value": clv,
         "mart_product_performance": product_perf,
         "mart_channel_mix": channel_mix,
+        "mart_service_performance": service_perf,
     }
 
 
@@ -137,7 +153,7 @@ def run(engine: str = "auto") -> dict:
         results[name] = {"rows": len(df), "path": str(path)}
         print(f"[gold] {name}: {len(df)} rows -> {path}")
 
-    # Sample preview for README / portfolio
+    # Preview summary for ops review
     top_stores = (
         marts["mart_daily_sales_by_store"]
         .groupby("store_name", as_index=False)["net_revenue"]
@@ -153,12 +169,15 @@ def run(engine: str = "auto") -> dict:
         .sort_values("net_revenue", ascending=False)
     )
     top_cats["net_revenue"] = top_cats["net_revenue"].round(2)
-    sample = {
+    summary = {
         "top_stores_by_revenue": top_stores.to_dict(orient="records"),
         "top_categories": top_cats.to_dict(orient="records"),
+        "service_ticket_count": int(len(marts["mart_service_performance"])),
+        "avg_csat": float(marts["mart_service_performance"]["csat"].dropna().mean().round(2))
+        if marts["mart_service_performance"]["csat"].notna().any() else None,
     }
-    sample_path = gold / "sample_outputs.json"
-    sample_path.write_text(json.dumps(sample, indent=2, default=str))
+    summary_path = gold / "pipeline_outputs.json"
+    summary_path.write_text(json.dumps(summary, indent=2, default=str))
 
     manifest = {
         "layer": "gold",

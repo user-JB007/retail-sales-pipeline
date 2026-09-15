@@ -1,26 +1,20 @@
-# Sales Performance Workbook
+# Sales Report — Workbook Brief
 
-**Audience:** executives & regional ops  
-**Question:** How is retail sales performing across stores, regions, and time?
+**Department:** Retail Analytics · Sales
 
-## Dashboards / sheets
+## Pages
 
-### 1. Overview (Executive KPIs)
-- **KPI cards:** Net Revenue, Transactions, AOV, Revenue MoM
-- **Charts:** Daily net revenue trend; revenue by region; revenue by category; snapshot text table
-- **Filters:** Date range, Region, Channel, Store type
+1. **Overview** — Net revenue, orders, AOV, MoM; daily revenue; region & category mix.
+2. **Stores & Regions** — Top stores, store-type mix, regional margin.
+3. **Trends** — Monthly region trends, channel mix, top products.
 
-### 2. Stores & Regions
-- Top 12 stores by net revenue (bar)
-- Revenue by store type
-- Gross margin % by region
-- **Filters:** Region, Store type; sort by net revenue
+## Primary sources
 
-### 3. Trends
-- Monthly net revenue by region (line)
-- Channel share (pie)
-- Channel × payment heatmap
-- **Filters:** Date, Channel
+- `mart_daily_sales_by_store.csv`
+- `mart_daily_sales_by_category.csv`
+- `mart_channel_mix.csv`
+- `mart_product_performance.csv`
 
-## Suggested calculated fields
-See `../calculations/sales_performance_calcs.md` — MoM revenue, margin %, FIXED LOD store share.
+## Suggested filters
+
+Date range, Region, Channel, Store type, Category.

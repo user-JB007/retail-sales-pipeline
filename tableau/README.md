@@ -1,15 +1,14 @@
 # Tableau Report Pack — Retail Sales Pipeline
 
 **Primary BI tool for this repo: Tableau.**  
-Honest portfolio design: **workbook briefs + calculated fields + sample mart CSVs + GitHub screenshots**.  
-No opaque `.twbx` binaries — hiring managers view dashboards on GitHub and rebuild in Tableau Desktop / Tableau Public from gold mart CSVs.
+Workbook briefs, calculated fields, gold mart CSVs, and GitHub screenshots. Rebuild in Tableau Desktop / Tableau Public from the mart CSVs under `tableau/marts/`.
 
-## Two workbooks (same retail domain, different questions)
+## Two workbooks (different business subjects)
 
 | Workbook | Purpose | Screenshots |
 |----------|---------|-------------|
-| **Sales Performance Workbook** | Executive KPIs, store/region performance, trends & channel mix | `sales_performance_01_overview.png`, `sales_performance_02_stores.png`, `sales_performance_03_trends.png` |
-| **Product & Customer Analysis Workbook** | Category mix, customer LTV/segments, product rankings | `product_customer_01_categories.png`, `product_customer_02_ltv.png`, `product_customer_03_products.png` |
+| **Sales Report** | Revenue, orders, stores/regions, categories/products, trends | `sales_01_overview.png`, `sales_02_stores.png`, `sales_03_trends.png` |
+| **Customer Satisfaction & Service Report** | CSAT, SLA attainment, pending queue, aging, reason/channel | `service_01_overview.png`, `service_02_sla.png`, `service_03_pending_aging.png` |
 
 ## View on GitHub (no Desktop required)
 
@@ -19,14 +18,14 @@ Regenerate after refreshing gold marts:
 
 ```bash
 python scripts/run_local.py --engine pandas
-python src/viz/generate_tableau_pages.py --export-samples
+python src/viz/generate_tableau_pages.py --export-marts
 ```
 
-Committed sample CSVs live in `tableau/sample_marts/` so Desktop recreation works without re-running the full pipeline.
+Committed mart CSVs live in `tableau/marts/` so Desktop recreation works without re-running the full pipeline.
 
 ## Rebuild in Tableau Desktop / Public
 
-1. **Connect** → Text file → load CSVs from `tableau/sample_marts/` (or `data/gold/<mart>/data.csv` after a local run).
+1. **Connect** → Text file → load CSVs from `tableau/marts/` (or `data/gold/<mart>/data.csv` after a local run).
 2. Suggested data sources:
 
 | File | Role |
@@ -36,10 +35,10 @@ Committed sample CSVs live in `tableau/sample_marts/` so Desktop recreation work
 | `mart_customer_lifetime_value.csv` | Customer LTV / loyalty |
 | `mart_product_performance.csv` | Product rankings |
 | `mart_channel_mix.csv` | Channel × payment |
+| `mart_service_performance.csv` | Service tickets / SLA / CSAT |
 
 3. Build sheets & dashboards using briefs in [`workbooks/`](workbooks/).
 4. Paste calculated fields from [`calculations/`](calculations/) (includes LOD examples).
-5. Optional: publish to Tableau Public and link from your profile.
 
 ## Folder map
 
@@ -49,5 +48,5 @@ tableau/
 ├── workbooks/          # sheet / filter / calc briefs per workbook
 ├── calculations/       # Tableau-style calculated fields
 ├── screenshots/        # PNGs embedded in root README
-└── sample_marts/       # CSVs for Desktop rebuild
+└── marts/              # CSVs for Desktop rebuild
 ```
