@@ -1,7 +1,7 @@
 """
 Airflow DAG: Retail Sales Medallion Pipeline
 
-Orchestrates bronze → silver → gold with clear task dependencies.
+Orchestrates extract_api → generate → bronze → silver → gold → load_api_sink.
 Designed to run locally with Astro / MWAA / Composer / standalone Airflow.
 
 Usage (local run without full Airflow):
@@ -34,6 +34,11 @@ DEFAULT_ARGS = {
 }
 
 
+def _run_extract_api():
+    from src.integrations.api_source import fetch_fakestore
+    fetch_fakestore(use_network=True)
+
+
 def _run_generate():
     from src.generate_source_data import main as gen
     gen()
@@ -54,21 +59,32 @@ def _run_gold():
     run(engine="auto")
 
 
+def _run_load_api_sink():
+    from src.integrations.api_sink import push_gold_summary
+    push_gold_summary()
+
+
 with DAG(
     dag_id="retail_sales_medallion_pipeline",
-    description="Bronze → Silver → Gold retail sales pipeline with DQ gates",
+    description="Bronze → Silver → Gold retail sales pipeline with DQ gates + API source/sink",
     default_args=DEFAULT_ARGS,
     schedule="0 6 * * *",  # daily 06:00 UTC
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["retail", "medallion", "pyspark", "analytics"],
+    tags=["retail", "medallion", "pyspark", "analytics", "api"],
     max_active_runs=1,
 ) as dag:
+
+    extract_api = PythonOperator(
+        task_id="extract_api",
+        python_callable=_run_extract_api,
+        doc_md="Pull products/carts/users from Fake Store API into bronze api_* tables.",
+    )
 
     generate_raw = PythonOperator(
         task_id="generate_or_refresh_raw",
         python_callable=_run_generate,
-        doc_md="Refresh source extracts (replace with S3/ADLS ingest in prod).",
+        doc_md="Refresh file-based source extracts (offline path).",
     )
 
     bronze = PythonOperator(
@@ -89,7 +105,12 @@ with DAG(
         doc_md="Build analytics marts: store daily, category, CLV, product, channel.",
     )
 
-    # Optional: load gold into Snowflake-style warehouse (SQL files as reference)
+    load_api_sink = PythonOperator(
+        task_id="load_api_sink",
+        python_callable=_run_load_api_sink,
+        doc_md="POST gold summary JSON to local landing API and JSONPlaceholder.",
+    )
+
     warehouse_hint = BashOperator(
         task_id="warehouse_load_hint",
         bash_command=(
@@ -98,4 +119,4 @@ with DAG(
         ),
     )
 
-    generate_raw >> bronze >> silver >> gold >> warehouse_hint
+    extract_api >> generate_raw >> bronze >> silver >> gold >> load_api_sink >> warehouse_hint

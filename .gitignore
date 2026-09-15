@@ -47,3 +47,8 @@ output/
 .env.local
 credentials.json
 **/secrets/
+
+# API landing + sink receipts (regenerated locally)
+data/landing/
+data/sink_receipts/
+data/raw/api/

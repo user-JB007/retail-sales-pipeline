@@ -68,3 +68,17 @@ See [cloud_mapping.md](./cloud_mapping.md) for how the same pipeline maps to **A
 ## Service data
 
 Raw `service_tickets` land in bronze, clean as `fact_service_tickets` in silver, and publish as gold `mart_service_performance` for the Customer Satisfaction & Service Tableau workbook.
+
+
+## API source and sink
+
+**Source (primary for API stage):** [Fake Store API](https://fakestoreapi.com/) — `GET /products`, `/carts`, `/users` into bronze tables `api_products`, `api_carts`, `api_users`. URLs and timeouts are config-driven (`config/pipeline.yaml` `api_source`, env `API_SOURCE_BASE_URL`).
+
+**Sink:** POST gold mart summary JSON to:
+
+1. Local FastAPI landing service (`src/sinks/http_sink_server.py`, `SINK_API_URL`, default `http://127.0.0.1:8089/ingest`) writing under `data/landing/`
+2. Optional [JSONPlaceholder](https://jsonplaceholder.typicode.com/posts) (`EXTERNAL_SINK_URL`)
+
+Airflow tasks: `extract_api`, `load_api_sink`. CLI: `python scripts/run_local.py --source api|both --sink api`.
+
+When the network is unavailable, keep `--source file` so file-based raw → bronze continues; API extract reuses an existing bronze landing if present.

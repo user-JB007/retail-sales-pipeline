@@ -43,12 +43,18 @@ python src/viz/generate_tableau_pages.py --export-marts
 flowchart LR
   subgraph Sources
     RAW["data/raw<br/>CSV / Parquet"]
+    API["Fake Store API<br/>products · carts · users"]
   end
 
   subgraph Medallion["Medallion Lakehouse"]
     B["Bronze<br/>land + ingest metadata"]
     S["Silver<br/>clean · conform · DQ · quarantine"]
     G["Gold<br/>business marts"]
+  end
+
+  subgraph Sinks
+    LOCAL["Local FastAPI sink<br/>POST /ingest"]
+    JP["JSONPlaceholder<br/>POST /posts"]
   end
 
   subgraph Orchestration
@@ -59,27 +65,41 @@ flowchart LR
     SF["Snowflake-style SQL<br/>dims · facts · marts"]
   end
 
-  subgraph Cloud["Cloud mapping (docs)"]
-    ADF["ADF / Fabric Pipelines"]
-    DBX["Databricks + ADLS"]
-  end
-
-  RAW --> B --> S --> G
+  RAW --> B
+  API --> B
+  B --> S --> G
+  G --> LOCAL
+  G --> JP
   AF -.-> B
   AF -.-> S
   AF -.-> G
   G --> SF
-  B -.-> ADF
-  S -.-> DBX
 ```
 
 | Layer | What it does |
 |-------|----------------|
 | **Raw** | Stores, products, customers, sales transactions, service tickets |
+| **API source** | Fake Store HTTP pull → bronze `api_products` / `api_carts` / `api_users` |
 | **Bronze** | Parquet landing with `_ingest_ts`, `_source_system`, run id |
 | **Silver** | Typed dims/facts (sales + service), quarantine invalid rows, DQ report |
 | **Gold** | Daily store/category sales, CLV, product performance, channel mix, service/SLA mart |
+| **API sink** | POST gold summary to local landing API + JSONPlaceholder |
 | **SQL** | Snowflake-flavored schemas, dims, facts, gold CTAS/views |
+
+### Sources
+
+| Source | Type | Notes |
+|--------|------|-------|
+| `data/raw/*.csv` | File | Default offline path (`--source file`) |
+| [Fake Store API](https://fakestoreapi.com/) | HTTP GET | Primary API source — products, carts, users; no key required. Config: `api_source` in `config/pipeline.yaml` / `API_SOURCE_BASE_URL` |
+
+### Sinks
+
+| Sink | Type | Notes |
+|------|------|-------|
+| Local landing API | HTTP POST | `src/sinks/http_sink_server.py` — `POST /ingest` → `data/landing/`; default `SINK_API_URL=http://127.0.0.1:8089/ingest` |
+| [JSONPlaceholder](https://jsonplaceholder.typicode.com/posts) | HTTP POST | Alternate external sink for delivery proof (`EXTERNAL_SINK_URL`) |
+| File fallback | Local JSON | If the local sink is unreachable, payload is written under `data/landing/` |
 
 ---
 
@@ -144,7 +164,25 @@ python scripts/run_local.py --engine spark
 
 ### Airflow
 
-Point `RETAIL_PIPELINE_HOME` at this repo and drop `dags/retail_sales_pipeline_dag.py` into your Airflow `dags/` folder (or symlink). Task graph: `generate_or_refresh_raw → bronze_ingest → silver_transform_and_dq → gold_build_marts → warehouse_load_hint`.
+Point `RETAIL_PIPELINE_HOME` at this repo and drop `dags/retail_sales_pipeline_dag.py` into your Airflow `dags/` folder (or symlink). Task graph: `extract_api → generate_or_refresh_raw → bronze_ingest → silver_transform_and_dq → gold_build_marts → load_api_sink → warehouse_load_hint`.
+
+### API source + sink
+
+```bash
+# Pull Fake Store products/carts/users into bronze (primary API source stage)
+python -m src.integrations.api_source
+
+# Full pipeline with API source, then POST gold summary to sinks
+python scripts/run_local.py --engine pandas --source both --sink api
+
+# Local sink receiver (separate terminal)
+uvicorn src.sinks.http_sink_server:app --host 127.0.0.1 --port 8089
+
+# Push gold summary only (local + JSONPlaceholder)
+python -m src.integrations.api_sink
+```
+
+Offline: omit `--source api` / use `--source file` so the existing `data/raw` path continues to work when the network is unavailable. If a prior `data/bronze/api_products` landing exists, `api_source` reuses it on network failure.
 
 ---
 
@@ -160,6 +198,8 @@ retail-sales-pipeline/
 ├── src/
 │   ├── generate_source_data.py
 │   ├── jobs/                 # bronze → silver → gold
+│   ├── integrations/         # Fake Store source + HTTP sink client
+│   ├── sinks/http_sink_server.py
 │   ├── quality/checks.py
 │   ├── viz/generate_tableau_pages.py
 │   └── utils/

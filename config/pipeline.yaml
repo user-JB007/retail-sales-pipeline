@@ -45,3 +45,23 @@ spark:
 airflow:
   dag_id: retail_sales_medallion_pipeline
   schedule: "0 6 * * *"
+
+api_source:
+  # Fake Store API — no API key required
+  base_url: https://fakestoreapi.com
+  products_path: /products
+  carts_path: /carts
+  users_path: /users
+  timeout: 20
+  retries: 3
+  fetch_carts: true
+  fetch_users: true
+
+api_sink:
+  # Local FastAPI sink (src/sinks/http_sink_server.py) + optional JSONPlaceholder
+  local_url: http://127.0.0.1:8089/ingest
+  external_url: https://jsonplaceholder.typicode.com/posts
+  timeout: 20
+  retries: 3
+  post_local: true
+  post_external: true
