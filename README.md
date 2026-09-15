@@ -12,9 +12,6 @@ Hire-ready **data engineering portfolio project**: end-to-end retail sales analy
 
 ---
 
-
----
-
 ## Power BI Reports
 
 Full pipeline code **and** executive BI screenshots live in this repo — view the dashboards on GitHub without Power BI Desktop.
