@@ -3,6 +3,9 @@
 **Primary BI deliverable: packaged `.twbx` workbooks** under [`workbooks/`](workbooks/).  
 Mart CSVs, calculated-field notes, and screenshots support rebuild and GitHub preview.
 
+
+**Desktop openability:** braced `simple-id` UUIDs; dashboards include a Desktop `<devicelayout>`; worksheet tabs are not blanket-hidden; no broken INDEX() Top-N store filter.
+
 ## Packaged workbooks
 
 | File | Dashboards | Notes |
@@ -13,7 +16,7 @@ Mart CSVs, calculated-field notes, and screenshots support rebuild and GitHub pr
 | [`workbooks/Retail_Sales_Report.twbx`](workbooks/Retail_Sales_Report.twbx) | same as Sales Dashboard v3 | Legacy filename |
 | [`workbooks/Retail_Service_Satisfaction_Report.twbx`](workbooks/Retail_Service_Satisfaction_Report.twbx) | same as Service Dashboard v3 | Legacy filename |
 
-**Avoid** `Retail_Ops_Dashboard_v2.twbx` — Tableau Desktop opens it as empty **Sheet 31** (dashboards/worksheets discarded).
+Obsolete `Retail_Ops_Dashboard_v2.twbx` was removed (Desktop opened it as empty **Sheet 31**). Use **v3**.
 
 Each `.twbx` embeds the TWB XML, gold mart CSVs (`Data/Datasources/`), and Hyper extracts (`Data/Extracts/`).
 

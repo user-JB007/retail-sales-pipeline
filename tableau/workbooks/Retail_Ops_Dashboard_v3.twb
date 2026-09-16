@@ -13,10 +13,6 @@
   <datasources>
 <datasource hasconnection="false" inline="true" name="Parameters" version="18.1">
       <aliases enabled="yes" />
-      <column caption="Top N Stores" datatype="integer" name="[Top N Stores]" param-domain-type="range" role="measure" type="quantitative" value="10">
-        <calculation class="tableau" formula="10" />
-        <range granularity="1" max="25" min="5" />
-      </column>
     <column caption="Aging Threshold Hours" datatype="integer" name="[Aging Threshold Hours]" param-domain-type="range" role="measure" type="quantitative" value="72">
         <calculation class="tableau" formula="72" />
         <range granularity="1" max="336" min="24" />
@@ -384,7 +380,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{182ee578-67e3-4d93-98e1-dd05bde4e4d5}" /></worksheet>
+    <simple-id uuid="{2540c9a6-121b-4fb1-8bd6-b41efe0af645}" /></worksheet>
 
     <worksheet name="KPI Orders">
       <layout-options>
@@ -417,7 +413,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{b8ec867d-5853-42f2-a5a0-ba3155fc4d67}" /></worksheet>
+    <simple-id uuid="{10bfb830-de56-4e66-887c-fc169fe1284e}" /></worksheet>
 
     <worksheet name="KPI AOV">
       <layout-options>
@@ -450,7 +446,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{ae877b7a-4cb4-4b39-9d73-3838ea40f2c9}" /></worksheet>
+    <simple-id uuid="{dc47e0a9-b5a3-4b3d-893d-99e8b1c6c5f7}" /></worksheet>
 
     <worksheet name="KPI Gross Margin">
       <layout-options>
@@ -483,7 +479,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{f69b6053-4ae7-4ec0-b392-c72b4594dc24}" /></worksheet>
+    <simple-id uuid="{041234cb-ded8-4f34-8207-dbaa6ec1d4e2}" /></worksheet>
 
     <worksheet name="Revenue Trend">
       <layout-options>
@@ -516,7 +512,7 @@
         <rows>[federated.daily_sales_store].[sum:net_revenue:qk]</rows>
         <cols>[federated.daily_sales_store].[none:transaction_date:ok]</cols>
       </table>
-    <simple-id uuid="{67677395-5ff0-4e15-acc6-6ba504eae2dc}" /></worksheet>
+    <simple-id uuid="{ce920c42-6a83-454d-9193-63b90ed88723}" /></worksheet>
 
     <worksheet name="Revenue by Region">
       <layout-options>
@@ -552,7 +548,7 @@
         <rows>[federated.daily_sales_store].[none:region:nk]</rows>
         <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{39d2dc7f-3c84-4453-a2a4-fcbcca109696}" /></worksheet>
+    <simple-id uuid="{1b7aa215-2633-4b02-8d0a-d5bee81bc9d2}" /></worksheet>
 
     <worksheet name="Revenue by Store Type">
       <layout-options>
@@ -588,7 +584,7 @@
         <rows>[federated.daily_sales_store].[none:store_type:nk]</rows>
         <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{caea714b-6ebf-4c76-af30-bafb25b0bc49}" /></worksheet>
+    <simple-id uuid="{e49a32b6-a0d4-43f4-9629-fd2dbfb89ce5}" /></worksheet>
 
     <worksheet name="Margin by Region">
       <layout-options>
@@ -624,7 +620,7 @@
         <rows>[federated.daily_sales_store].[none:region:nk]</rows>
         <cols>[federated.daily_sales_store].[usr:Calculation_Gross_Margin_Pct:qk]</cols>
       </table>
-    <simple-id uuid="{62cd0c11-7fc4-4858-8318-65453c1b7454}" /></worksheet>
+    <simple-id uuid="{b8848356-dfad-409d-b045-c565a4d6fc85}" /></worksheet>
 
     <worksheet name="Top Stores by Revenue">
       <layout-options>
@@ -638,14 +634,7 @@
         <view>
           <datasources>
             <datasource caption="Daily Sales by Store" name="federated.daily_sales_store" />
-            <datasource name="Parameters" />
           </datasources>
-          <datasource-dependencies datasource="Parameters">
-            <column caption="Top N Stores" datatype="integer" name="[Top N Stores]" param-domain-type="range" role="measure" type="quantitative" value="10">
-              <calculation class="tableau" formula="10" />
-              <range granularity="1" max="25" min="5" />
-            </column>
-          </datasource-dependencies>
           <datasource-dependencies datasource="federated.daily_sales_store">
             <column datatype="string" name="[store_name]" role="dimension" type="nominal" />
             <column datatype="string" name="[region]" role="dimension" type="nominal" />
@@ -669,7 +658,7 @@
         <rows>[federated.daily_sales_store].[none:store_name:nk]</rows>
         <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{87961b42-6a0f-4627-a654-faa17169ade1}" /></worksheet>
+    <simple-id uuid="{f967e564-fa9d-4a97-946e-31de2bf9153f}" /></worksheet>
 
     <worksheet name="Category Revenue">
       <layout-options>
@@ -705,7 +694,7 @@
         <rows>[federated.daily_sales_category].[none:category:nk]</rows>
         <cols>[federated.daily_sales_category].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{6d61418a-2504-4406-9119-9f1f74034921}" /></worksheet>
+    <simple-id uuid="{1bddc87d-756b-4948-ab4c-d461b2588a48}" /></worksheet>
 
     <worksheet name="Category Trend">
       <layout-options>
@@ -738,7 +727,7 @@
         <rows>[federated.daily_sales_category].[sum:net_revenue:qk]</rows>
         <cols>[federated.daily_sales_category].[none:transaction_date:ok]</cols>
       </table>
-    <simple-id uuid="{9420aa1a-13f1-4107-b441-7c1936e533a6}" /></worksheet>
+    <simple-id uuid="{ae6b1f96-23b0-464e-a877-bdf21f68f8b5}" /></worksheet>
 
     <worksheet name="Channel Revenue">
       <layout-options>
@@ -774,7 +763,7 @@
         <rows>[federated.channel_mix].[none:channel:nk]</rows>
         <cols>[federated.channel_mix].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{4bfd1bbe-1e80-4219-815b-1c5b374c7c86}" /></worksheet>
+    <simple-id uuid="{dc73fdef-f087-42de-bf38-f4a85ceb26b5}" /></worksheet>
 
     <worksheet name="Channel Payment Heatmap">
       <layout-options>
@@ -812,7 +801,7 @@
         <rows>[federated.channel_mix].[none:channel:nk]</rows>
         <cols>[federated.channel_mix].[none:payment_method:nk]</cols>
       </table>
-    <simple-id uuid="{ad312d99-232f-44a4-8192-b2b03155de4e}" /></worksheet>
+    <simple-id uuid="{d3d03108-542d-4174-b24a-7d12cc5755be}" /></worksheet>
 
     <worksheet name="Top Products">
       <layout-options>
@@ -851,7 +840,7 @@
         <rows>[federated.product_perf].[none:product_name:nk]</rows>
         <cols>[federated.product_perf].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{9e200d9e-d7d0-4713-8ec5-36d43b86d7ad}" /></worksheet>
+    <simple-id uuid="{e3e03fa8-07c2-4fec-9879-459266e487e1}" /></worksheet>
 
   <worksheet name="KPI Ticket Volume">
       <layout-options>
@@ -884,7 +873,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{182fa821-a3d6-44d0-8240-d799c822f545}" /></worksheet>
+    <simple-id uuid="{c8dba01b-58b9-4d87-bfc4-4fdf86b82a3d}" /></worksheet>
 
     <worksheet name="KPI Avg CSAT">
       <layout-options>
@@ -917,7 +906,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{12518669-a6f3-4781-9435-c5f607e3b42e}" /></worksheet>
+    <simple-id uuid="{0c79ba90-69f7-453d-b68b-5c9acceda00b}" /></worksheet>
 
     <worksheet name="KPI Within SLA">
       <layout-options>
@@ -950,7 +939,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{51330093-1789-4fd6-b0e4-9845e70a10d8}" /></worksheet>
+    <simple-id uuid="{813fa30a-5ab7-42af-a25f-4b63c15f542d}" /></worksheet>
 
     <worksheet name="KPI Pending">
       <layout-options>
@@ -983,7 +972,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{589dd15a-9c45-4086-b727-3176bfd3088a}" /></worksheet>
+    <simple-id uuid="{32405dab-db32-48b7-9cd5-5001da2657bb}" /></worksheet>
 
     <worksheet name="Ticket Volume Trend">
       <layout-options>
@@ -1016,7 +1005,7 @@
         <rows>[federated.service_tickets].[cd:ticket_id:qk]</rows>
         <cols>[federated.service_tickets].[none:opened_date:ok]</cols>
       </table>
-    <simple-id uuid="{ebc92e00-be1a-462d-ad28-9d5e9bc4b4a2}" /></worksheet>
+    <simple-id uuid="{6f661dec-87be-49af-af4c-9d0b6158e94d}" /></worksheet>
 
     <worksheet name="Reason Mix">
       <layout-options>
@@ -1052,7 +1041,7 @@
         <rows>[federated.service_tickets].[none:reason:nk]</rows>
         <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
       </table>
-    <simple-id uuid="{3717204f-bb40-4b97-aa26-010c3b9b9001}" /></worksheet>
+    <simple-id uuid="{0c897101-6a69-4186-b39d-ad0e9308270b}" /></worksheet>
 
     <worksheet name="Channel Mix">
       <layout-options>
@@ -1088,7 +1077,7 @@
         <rows>[federated.service_tickets].[none:channel:nk]</rows>
         <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
       </table>
-    <simple-id uuid="{27c7f12a-1bd1-467d-8e06-7de89ac7e35c}" /></worksheet>
+    <simple-id uuid="{fada533a-b2a6-452d-a4bf-38626c15631f}" /></worksheet>
 
     <worksheet name="SLA Status Mix">
       <layout-options>
@@ -1124,7 +1113,7 @@
         <rows>[federated.service_tickets].[none:sla_status:nk]</rows>
         <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
       </table>
-    <simple-id uuid="{7adae1ff-fb5f-4075-b803-e1d62cd48231}" /></worksheet>
+    <simple-id uuid="{6cdaafe5-1959-4b41-9066-740654b820c9}" /></worksheet>
 
     <worksheet name="Resolve by Priority">
       <layout-options>
@@ -1160,7 +1149,7 @@
         <rows>[federated.service_tickets].[none:priority:nk]</rows>
         <cols>[federated.service_tickets].[usr:Calculation_Avg_Resolve:qk]</cols>
       </table>
-    <simple-id uuid="{114a4e2f-0bb2-4fcd-8197-0cf125669c72}" /></worksheet>
+    <simple-id uuid="{9925b672-f10a-4982-ba3a-913a59f88bf4}" /></worksheet>
 
     <worksheet name="Breach by Channel">
       <layout-options>
@@ -1198,7 +1187,7 @@
         <rows>[federated.service_tickets].[none:channel:nk]</rows>
         <cols>[federated.service_tickets].[none:priority:nk]</cols>
       </table>
-    <simple-id uuid="{92010810-6adb-465c-9df4-c20983a9e65e}" /></worksheet>
+    <simple-id uuid="{c5b2750f-c1d8-4205-b740-4284776e8718}" /></worksheet>
 
     <worksheet name="KPI Avg Resolve">
       <layout-options>
@@ -1231,7 +1220,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{7cd71a27-7144-433e-8edd-442c9040b874}" /></worksheet>
+    <simple-id uuid="{a716c1fb-7b34-4f4d-b369-aad1d47b9a23}" /></worksheet>
 
     <worksheet name="Within SLA by Region">
       <layout-options>
@@ -1267,7 +1256,7 @@
         <rows>[federated.service_tickets].[none:region:nk]</rows>
         <cols>[federated.service_tickets].[usr:Calculation_Within_SLA_Pct:qk]</cols>
       </table>
-    <simple-id uuid="{71d168c0-655d-47a9-825f-ab246d4a9a22}" /></worksheet>
+    <simple-id uuid="{06a446da-f264-4828-a23c-127c9a8368a5}" /></worksheet>
 
     <worksheet name="Open Aging Buckets">
       <layout-options>
@@ -1312,7 +1301,7 @@
         <rows>[federated.service_tickets].[cd:ticket_id:qk]</rows>
         <cols>[federated.service_tickets].[none:Calculation_Aging_Bucket:nk]</cols>
       </table>
-    <simple-id uuid="{65b06444-b233-4664-af6a-a525202691d6}" /></worksheet>
+    <simple-id uuid="{6919f303-11d1-4c79-8667-37dfd2dc6b17}" /></worksheet>
 
     <worksheet name="Open by Priority">
       <layout-options>
@@ -1348,7 +1337,7 @@
         <rows>[federated.service_tickets].[none:priority:nk]</rows>
         <cols>[federated.service_tickets].[sum:is_open:qk]</cols>
       </table>
-    <simple-id uuid="{a9e3c02e-9357-48dc-9ba2-5dab94eafe47}" /></worksheet>
+    <simple-id uuid="{04c26261-23bf-4582-9b52-5a320645e11c}" /></worksheet>
 
     <worksheet name="Open Reasons">
       <layout-options>
@@ -1384,7 +1373,7 @@
         <rows>[federated.service_tickets].[none:reason:nk]</rows>
         <cols>[federated.service_tickets].[sum:is_open:qk]</cols>
       </table>
-    <simple-id uuid="{1e6052c3-7ef1-45fa-9fdb-108ec0eb73c0}" /></worksheet>
+    <simple-id uuid="{50523885-619a-4de9-889d-98d0126c4a3e}" /></worksheet>
 
     <worksheet name="CSAT by Channel">
       <layout-options>
@@ -1420,7 +1409,7 @@
         <rows>[federated.service_tickets].[none:channel:nk]</rows>
         <cols>[federated.service_tickets].[usr:Calculation_Avg_CSAT:qk]</cols>
       </table>
-    <simple-id uuid="{c02bb256-eca1-421a-8c59-6024e81638c2}" /></worksheet>
+    <simple-id uuid="{86eb02df-7224-40b3-95fa-626569e9342f}" /></worksheet>
 
   
   </worksheets>
@@ -1454,7 +1443,7 @@ Net revenue, orders, AOV, margin — trend, region, category, channel</run>
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{c7b89190-9619-4cf2-a26e-92d2df3e4048}" /></dashboard>
+      <simple-id uuid="{31c0941f-d16c-47c6-a590-5734b50eefc9}" /></dashboard>
 <dashboard name="Service">
       <style>
         <style-rule element="dashboard">
@@ -1483,7 +1472,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{d2b723a0-e96a-444b-8cce-037b60ff347e}" /></dashboard>
+      <simple-id uuid="{6bd09e1c-654b-415b-9b40-bf4614f1ba3d}" /></dashboard>
   </dashboards>
 
   <windows source-height="30">
@@ -1499,7 +1488,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
         <viewpoint name="Channel Revenue" />
       </viewpoints>
       <active id="-1" />
-    <simple-id uuid="{86aeb8bf-e131-414b-be24-8acae67f5f93}" /></window>
+    <simple-id uuid="{b7747e2c-4b52-410a-a52b-0a7ec6143096}" /></window>
     <window class="dashboard" name="Service">
       <viewpoints>
         <viewpoint name="KPI Ticket Volume" />
@@ -1512,7 +1501,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
         <viewpoint name="Channel Mix" />
       </viewpoints>
       <active id="-1" />
-    <simple-id uuid="{0ad1ca3d-a162-40db-aba4-342cd7121a6f}" /></window>
+    <simple-id uuid="{e5caf0ff-c535-4b44-96cd-d7bafa051948}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Net Revenue">
       <cards>
@@ -1529,7 +1518,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{3930d639-c28d-4300-a3c3-5c334da6a85a}" /></window>
+    <simple-id uuid="{e7227322-384f-4a2f-a269-3da0be5eb767}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Orders">
       <cards>
@@ -1546,7 +1535,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{ae135602-9b05-48e0-84a6-a9614e80bbcf}" /></window>
+    <simple-id uuid="{4dadd3f9-7802-4b7e-a290-60e532b6a26a}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI AOV">
       <cards>
@@ -1563,7 +1552,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{1ab093d3-30f6-4dc4-b863-48a812c5f764}" /></window>
+    <simple-id uuid="{1514f321-6299-48fc-9a01-aa443b643812}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Gross Margin">
       <cards>
@@ -1580,7 +1569,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{52697370-4c58-4d95-af31-83449fa9fb3c}" /></window>
+    <simple-id uuid="{8982affc-48af-4cf6-aabf-109ad948fc5d}" /></window>
 
     <window class="worksheet" maximized="false" name="Revenue Trend">
       <cards>
@@ -1597,7 +1586,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{cecedb95-6b9e-4648-b78f-346b6d6f94ed}" /></window>
+    <simple-id uuid="{d295753e-c03e-4755-9196-0f7de3f15868}" /></window>
 
     <window class="worksheet" maximized="false" name="Revenue by Region">
       <cards>
@@ -1614,7 +1603,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{aa727ade-7cd8-446a-b486-57959f41f3cf}" /></window>
+    <simple-id uuid="{688c6586-b135-489b-b6e4-3a7ed9cb6c78}" /></window>
 
     <window class="worksheet" maximized="false" name="Revenue by Store Type">
       <cards>
@@ -1631,7 +1620,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{c3fad1ff-3b0d-4c59-8104-3787daa28a87}" /></window>
+    <simple-id uuid="{9386980d-5d72-48dd-a55e-95fbf8beeb00}" /></window>
 
     <window class="worksheet" maximized="false" name="Margin by Region">
       <cards>
@@ -1648,7 +1637,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{9cb0809a-f601-4965-ae97-ba0a0f6dd222}" /></window>
+    <simple-id uuid="{daace863-d5e8-4508-a161-0991b50d3ed1}" /></window>
 
     <window class="worksheet" maximized="false" name="Top Stores by Revenue">
       <cards>
@@ -1665,7 +1654,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{24c85163-2854-4def-8a3a-9d49f2f3f447}" /></window>
+    <simple-id uuid="{b85ff4df-919c-40dd-962b-6c75da96ea3e}" /></window>
 
     <window class="worksheet" maximized="false" name="Category Revenue">
       <cards>
@@ -1682,7 +1671,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{7ec0b135-f005-4ec2-8e1b-fe6d1e8a566a}" /></window>
+    <simple-id uuid="{9f55da01-ab72-4dce-bdb5-4a200c6b9d15}" /></window>
 
     <window class="worksheet" maximized="false" name="Category Trend">
       <cards>
@@ -1699,7 +1688,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{e90ac032-1795-4259-9418-a5b474627e36}" /></window>
+    <simple-id uuid="{cff05042-f932-49db-8eef-2a74a26dd241}" /></window>
 
     <window class="worksheet" maximized="false" name="Channel Revenue">
       <cards>
@@ -1716,7 +1705,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{c7ebb86a-8285-4c9a-9ef3-8e1e9e5bb060}" /></window>
+    <simple-id uuid="{6bfe25af-704e-443f-adba-3fa76dd70187}" /></window>
 
     <window class="worksheet" maximized="false" name="Channel Payment Heatmap">
       <cards>
@@ -1733,7 +1722,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{88b64c3d-195c-4ff7-87ed-750e4e2d2082}" /></window>
+    <simple-id uuid="{7a2e556d-4904-4bb0-8db8-274472a521a9}" /></window>
 
     <window class="worksheet" maximized="false" name="Top Products">
       <cards>
@@ -1750,7 +1739,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{f21dd913-6a03-49d3-9bba-1c857feb145c}" /></window>
+    <simple-id uuid="{72d8934f-5cdc-43ac-b284-affe5bd57e69}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Ticket Volume">
       <cards>
@@ -1767,7 +1756,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{3e67387b-d4cc-4b56-a1b0-dbd4c84062aa}" /></window>
+    <simple-id uuid="{6f013fc9-f849-4fdd-90cb-6b572dfc4285}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Avg CSAT">
       <cards>
@@ -1784,7 +1773,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{232245c3-5814-421d-8d5b-0f9080cc6fc1}" /></window>
+    <simple-id uuid="{08d3b4ab-7c56-4e72-bc5e-e798005f5ddb}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Within SLA">
       <cards>
@@ -1801,7 +1790,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{e908693d-cf1e-4476-a0ae-c56c9ed179c1}" /></window>
+    <simple-id uuid="{5ece43c9-b39a-40bc-8e4e-d4fbc7ae4422}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Pending">
       <cards>
@@ -1818,7 +1807,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{05a5bf1e-33c2-42ac-9e70-9a7a9bba89bc}" /></window>
+    <simple-id uuid="{09484cdb-5e36-4e6a-b2fb-d9daa0935149}" /></window>
 
     <window class="worksheet" maximized="false" name="Ticket Volume Trend">
       <cards>
@@ -1835,7 +1824,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{15516fe9-da49-4cd5-8eba-f94c353eea27}" /></window>
+    <simple-id uuid="{3a907401-76e5-423c-bdb1-a71104d43be9}" /></window>
 
     <window class="worksheet" maximized="false" name="Reason Mix">
       <cards>
@@ -1852,7 +1841,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{1f0f918d-a1e7-4d7e-af94-d23cee8f2a22}" /></window>
+    <simple-id uuid="{f68f1691-1992-4ae2-b540-4e9feeb6a130}" /></window>
 
     <window class="worksheet" maximized="false" name="Channel Mix">
       <cards>
@@ -1869,7 +1858,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{7cf9a88c-c84f-466d-8ed0-8343649de7c2}" /></window>
+    <simple-id uuid="{0e9c48a7-c7ab-4492-ad7c-e69e05469d16}" /></window>
 
     <window class="worksheet" maximized="false" name="SLA Status Mix">
       <cards>
@@ -1886,7 +1875,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{1d4b8e64-4656-47e3-ae04-103d08f5d0ae}" /></window>
+    <simple-id uuid="{90c8f885-a714-4610-a42b-b84752e04a96}" /></window>
 
     <window class="worksheet" maximized="false" name="Resolve by Priority">
       <cards>
@@ -1903,7 +1892,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{01e15420-8796-49b7-971b-ed57770a3c03}" /></window>
+    <simple-id uuid="{020077a4-0e0d-4ea4-961d-24e42e39049e}" /></window>
 
     <window class="worksheet" maximized="false" name="Breach by Channel">
       <cards>
@@ -1920,7 +1909,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{d869bc0a-9c31-4107-89f4-46bd2a6f7ba5}" /></window>
+    <simple-id uuid="{c215de37-34b7-42fe-b670-ab2dd5f9bd5f}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Avg Resolve">
       <cards>
@@ -1937,7 +1926,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{b71f52b2-9a3c-4776-9af4-fba224e440db}" /></window>
+    <simple-id uuid="{aaf39e42-36f2-4206-bec2-9c768bdccf96}" /></window>
 
     <window class="worksheet" maximized="false" name="Within SLA by Region">
       <cards>
@@ -1954,7 +1943,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{cea48997-b483-428d-85be-108c952f0c41}" /></window>
+    <simple-id uuid="{18082232-b398-49b7-82bb-77b4e1bd5575}" /></window>
 
     <window class="worksheet" maximized="false" name="Open Aging Buckets">
       <cards>
@@ -1971,7 +1960,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{549ed7cf-0da7-47ef-a930-2f5e01852a53}" /></window>
+    <simple-id uuid="{02fe3467-a369-4cd4-a91a-28c758506570}" /></window>
 
     <window class="worksheet" maximized="false" name="Open by Priority">
       <cards>
@@ -1988,7 +1977,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{b9d564a0-b56e-4d4c-b5bf-64bca73c9dc1}" /></window>
+    <simple-id uuid="{babc391b-307f-4e59-af88-389812f2d81d}" /></window>
 
     <window class="worksheet" maximized="false" name="Open Reasons">
       <cards>
@@ -2005,7 +1994,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{d986f87a-8d85-4315-accf-d25428155020}" /></window>
+    <simple-id uuid="{279e2601-1dc8-4d38-a783-b27659114f0e}" /></window>
 
     <window class="worksheet" maximized="false" name="CSAT by Channel">
       <cards>
@@ -2022,7 +2011,7 @@ Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{6998fb2d-34d3-4a9f-ae70-db6e5be832fc}" /></window>
+    <simple-id uuid="{2cb906a6-c745-4387-9039-54b5c958b711}" /></window>
 
   </windows>
 </workbook>

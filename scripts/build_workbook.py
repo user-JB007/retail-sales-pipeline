@@ -10,6 +10,8 @@ Produces:
 
 Textscan CSV connections are embedded so Desktop / Public can open without
 a separate data hunt. Hyper extracts are included when present.
+Openability: braced simple-id UUIDs; dashboard Desktop device layouts;
+worksheet tabs stay visible (no blanket hidden=true). No INDEX() Top-N store filter.
 """
 
 from __future__ import annotations
@@ -536,14 +538,7 @@ def create_sales_twb() -> str:
         <view>
           <datasources>
             <datasource caption='{cap}' name='{ds}' />
-            <datasource name='Parameters' />
           </datasources>
-          <datasource-dependencies datasource='Parameters'>
-            <column caption='Top N Stores' datatype='integer' name='[Top N Stores]' param-domain-type='range' role='measure' type='quantitative' value='10'>
-              <calculation class='tableau' formula='10' />
-              <range granularity='1' max='25' min='5' />
-            </column>
-          </datasource-dependencies>
           <datasource-dependencies datasource='{ds}'>
             <column datatype='string' name='[store_name]' role='dimension' type='nominal' />
             <column datatype='string' name='[region]' role='dimension' type='nominal' />
@@ -612,10 +607,6 @@ def create_sales_twb() -> str:
   <datasources>
     <datasource hasconnection='false' inline='true' name='Parameters' version='18.1'>
       <aliases enabled='yes' />
-      <column caption='Top N Stores' datatype='integer' name='[Top N Stores]' param-domain-type='range' role='measure' type='quantitative' value='10'>
-        <calculation class='tableau' formula='10' />
-        <range granularity='1' max='25' min='5' />
-      </column>
     </datasource>
 {textscan_ds(ds, cap, 'textscan.daily_sales_store', 'mart_daily_sales_by_store.csv', store_cols, store_fields, store_calcs)}
 {textscan_ds(ds_cat, cap_cat, 'textscan.daily_sales_category', 'mart_daily_sales_by_category.csv', cat_cols, cat_fields, '')}
@@ -1181,7 +1172,7 @@ def create_ops_twb() -> str:
     sales_root = ET.fromstring(create_sales_twb())
     service_root = ET.fromstring(create_service_twb())
 
-    # --- Parameters: merge Top N Stores + Aging Threshold Hours ---
+    # --- Parameters: merge sales Parameters + Aging Threshold Hours ---
     params = _clone(sales_root.find("./datasources/datasource[@name='Parameters']"))
     svc_params = service_root.find("./datasources/datasource[@name='Parameters']")
     for col in list(svc_params.findall("column")):

@@ -10,7 +10,7 @@ End-to-end retail sales and customer-service analytics on a bronze → silver �
 
 **Primary BI deliverable: packaged `.twbx` workbooks** (interactive — open in Tableau Desktop or Tableau Public). Screenshots below are secondary previews for GitHub browsing.
 
-> **Use v3 — not v2.** `Retail_Ops_Dashboard_v2.twbx` opens as an empty **Sheet 31** (Tableau discarded the dashboards). Download **v3** instead.
+> **Use v3.** Packaged workbooks are rebuilt for Tableau Desktop openability (braced `simple-id` UUIDs, Desktop device layouts, visible worksheet tabs). Obsolete Ops v2 (empty Sheet 31) was removed.
 
 | Workbook | Path | Notes |
 |----------|------|-------|
@@ -26,9 +26,9 @@ End-to-end retail sales and customer-service analytics on a bronze → silver �
 2. Double-click, or File → Open in Tableau Desktop / Tableau Public.
 3. You should land on a **dashboard** tab (grid icon) — **Sales** (combined) or **1. Overview** (singles) — with KPI cards and charts filled. Switch tabs for the other page.
 4. If anything still looks empty, open the two singles: `Retail_Sales_Dashboard_v3.twbx` and `Retail_Service_Dashboard_v3.twbx` and click the dashboard tabs at the bottom.
-5. Do **not** open `Retail_Ops_Dashboard_v2.twbx` (known empty Sheet 31).
+5. Worksheet tabs stay visible on purpose (hiding them previously discarded the UI as empty Sheet 31).
 
-CSV marts and Hyper extracts are embedded; no separate data hunt. Worksheet tabs stay visible on purpose (hiding them contributed to v2 discarding UI).
+CSV marts and Hyper extracts are embedded; no separate data hunt.
 
 **Rebuild after mart refresh:**
 
@@ -42,7 +42,7 @@ python scripts/build_workbook.py
 Details, calculated fields, and parameters: [`tableau/README.md`](tableau/README.md)
 
 ### Report 1 — Sales Report (preview)
-Revenue, orders, stores/regions, categories/products, and trends. Parameter: **Top N Stores**.
+Revenue, orders, stores/regions, categories/products, and trends. (No INDEX Top-N store filter — that pattern broke Desktop opens.)
 
 | Page | Preview |
 |------|---------|
