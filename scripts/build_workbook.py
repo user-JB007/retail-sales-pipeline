@@ -32,21 +32,32 @@ def esc(s: str) -> str:
 
 
 def new_uuid() -> str:
-    return str(uuid.uuid4())
+    """Tableau requires braced UUIDs: {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}."""
+    return "{" + str(uuid.uuid4()) + "}"
 
 
 def simple_id_xml(indent: str = "      ") -> str:
-    return f"{indent}<simple-id uuid='{new_uuid()}' />"
+    return f'{indent}<simple-id uuid="{new_uuid()}" />'
+
+
+def _brace_uuid(value: str | None) -> str:
+    if not value:
+        return new_uuid()
+    v = value.strip()
+    if v.startswith("{") and v.endswith("}"):
+        return v
+    return "{" + v + "}"
 
 
 def ensure_content_models(root: ET.Element) -> None:
     """Guarantee Tableau content-model required children (worksheet / dashboard / window).
 
     Worksheets: trailing <simple-id> after <table>.
-    Dashboards: <datasources>, <devicelayouts />, <simple-id> in order after size/zones.
+    Dashboards: <datasources>, <devicelayouts> with >=1 <devicelayout>, <simple-id>
+    after zones. Empty <devicelayouts/> is invalid.
     Windows: trailing <simple-id>.
+    All simple-id uuid values must be braced.
     """
-    # Discover all workbook-level datasource names for dashboard refs
     ds_names: list[str] = []
     for ds in root.findall("./datasources/datasource"):
         name = ds.get("name")
@@ -55,9 +66,15 @@ def ensure_content_models(root: ET.Element) -> None:
     if "Parameters" not in ds_names:
         ds_names.append("Parameters")
 
+    def _ensure_simple_id(el: ET.Element) -> None:
+        sid = el.find("simple-id")
+        if sid is None:
+            ET.SubElement(el, "simple-id", {"uuid": new_uuid()})
+        else:
+            sid.set("uuid", _brace_uuid(sid.get("uuid")))
+
     for ws in root.findall("./worksheets/worksheet"):
-        if ws.find("simple-id") is None:
-            ET.SubElement(ws, "simple-id", {"uuid": new_uuid()})
+        _ensure_simple_id(ws)
 
     for dash in root.findall("./dashboards/dashboard"):
         children = list(dash)
@@ -74,21 +91,32 @@ def ensure_content_models(root: ET.Element) -> None:
             children = list(dash)
             tags = [c.tag for c in children]
 
-        if "devicelayouts" not in tags:
-            dl = ET.Element("devicelayouts")
+        dl_el = dash.find("devicelayouts")
+        if dl_el is None:
+            dl_el = ET.Element("devicelayouts")
             if "zones" in tags:
-                dash.insert(tags.index("zones") + 1, dl)
+                dash.insert(tags.index("zones") + 1, dl_el)
             else:
-                dash.append(dl)
+                dash.append(dl_el)
             children = list(dash)
             tags = [c.tag for c in children]
+        # Empty <devicelayouts/> is invalid — require a Desktop layout child
+        if dl_el.find("devicelayout") is None:
+            size_el = dash.find("size")
+            attrs = {
+                "maxheight": size_el.get("maxheight", "900") if size_el is not None else "900",
+                "maxwidth": size_el.get("maxwidth", "1400") if size_el is not None else "1400",
+                "minheight": size_el.get("minheight", "900") if size_el is not None else "900",
+                "minwidth": size_el.get("minwidth", "1400") if size_el is not None else "1400",
+                "sizing-mode": size_el.get("sizing-mode", "fixed") if size_el is not None else "fixed",
+            }
+            layout = ET.SubElement(dl_el, "devicelayout", {"name": "Desktop"})
+            ET.SubElement(layout, "size", attrs)
 
-        if "simple-id" not in tags:
-            ET.SubElement(dash, "simple-id", {"uuid": new_uuid()})
+        _ensure_simple_id(dash)
 
     for win in root.findall("./windows/window"):
-        if win.find("simple-id") is None:
-            ET.SubElement(win, "simple-id", {"uuid": new_uuid()})
+        _ensure_simple_id(win)
 
 
 
