@@ -287,7 +287,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{e84b503b-b5fa-4c6d-94ff-45798c96d346}" /></worksheet>
+    <simple-id uuid="{257995f7-b3e9-4de6-87ed-2c9961c7a067}" /></worksheet>
 
     <worksheet name="KPI Orders">
       <layout-options>
@@ -320,7 +320,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{56fc6920-0991-496a-afd1-b6c64538853c}" /></worksheet>
+    <simple-id uuid="{b04328dd-a091-49af-b75b-f3fdccab1efe}" /></worksheet>
 
     <worksheet name="KPI AOV">
       <layout-options>
@@ -353,7 +353,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{be62c07d-2c91-473a-8d8c-6a97ce0e820d}" /></worksheet>
+    <simple-id uuid="{56667ae8-1c43-4a96-a1bc-a9584ac2a790}" /></worksheet>
 
     <worksheet name="KPI Gross Margin">
       <layout-options>
@@ -386,7 +386,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{d4def299-0b62-430f-adf0-8d40f5ac6062}" /></worksheet>
+    <simple-id uuid="{a193f67f-0a0b-4c05-9589-6b8e9b18a079}" /></worksheet>
 
     <worksheet name="Revenue Trend">
       <layout-options>
@@ -419,7 +419,7 @@
         <rows>[federated.daily_sales_store].[sum:net_revenue:qk]</rows>
         <cols>[federated.daily_sales_store].[none:transaction_date:ok]</cols>
       </table>
-    <simple-id uuid="{77309f20-3d0d-4eae-b5bb-69424ff22792}" /></worksheet>
+    <simple-id uuid="{ed98c340-4037-43aa-a22a-8a19756d7272}" /></worksheet>
 
     <worksheet name="Revenue by Region">
       <layout-options>
@@ -455,7 +455,7 @@
         <rows>[federated.daily_sales_store].[none:region:nk]</rows>
         <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{4a48a450-e280-450c-b0d9-5d589d2c4815}" /></worksheet>
+    <simple-id uuid="{ee6a4f3d-ec73-4f26-b5bd-cce9ccb49a46}" /></worksheet>
 
     <worksheet name="Revenue by Store Type">
       <layout-options>
@@ -491,7 +491,7 @@
         <rows>[federated.daily_sales_store].[none:store_type:nk]</rows>
         <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{d1ebf09e-cdcb-4c0f-8853-4daa5a9b808c}" /></worksheet>
+    <simple-id uuid="{ffdde11b-6048-4fba-9409-61ede85973b8}" /></worksheet>
 
     <worksheet name="Margin by Region">
       <layout-options>
@@ -527,7 +527,7 @@
         <rows>[federated.daily_sales_store].[none:region:nk]</rows>
         <cols>[federated.daily_sales_store].[usr:Calculation_Gross_Margin_Pct:qk]</cols>
       </table>
-    <simple-id uuid="{40c80a62-645c-4490-93f9-f8c54fc4e293}" /></worksheet>
+    <simple-id uuid="{f4810254-5efc-45bc-bcaf-6789897ec4d2}" /></worksheet>
 
     <worksheet name="Top Stores by Revenue">
       <layout-options>
@@ -572,7 +572,7 @@
         <rows>[federated.daily_sales_store].[none:store_name:nk]</rows>
         <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{c35625d9-dc26-4624-b281-cc3ae57e879d}" /></worksheet>
+    <simple-id uuid="{dfc74fa9-805c-429c-a763-36fba7537e18}" /></worksheet>
 
     <worksheet name="Category Revenue">
       <layout-options>
@@ -608,7 +608,7 @@
         <rows>[federated.daily_sales_category].[none:category:nk]</rows>
         <cols>[federated.daily_sales_category].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{45e36bf6-529d-48b4-aa14-9f8fd2c3477c}" /></worksheet>
+    <simple-id uuid="{854a5273-62e7-47b8-ab28-52388b046dc0}" /></worksheet>
 
     <worksheet name="Category Trend">
       <layout-options>
@@ -641,7 +641,7 @@
         <rows>[federated.daily_sales_category].[sum:net_revenue:qk]</rows>
         <cols>[federated.daily_sales_category].[none:transaction_date:ok]</cols>
       </table>
-    <simple-id uuid="{91c5865d-fddf-4a1b-b3fb-7bec24e79ba1}" /></worksheet>
+    <simple-id uuid="{08d5668c-60de-4117-9e7c-1aabcc4722eb}" /></worksheet>
 
     <worksheet name="Channel Revenue">
       <layout-options>
@@ -677,7 +677,7 @@
         <rows>[federated.channel_mix].[none:channel:nk]</rows>
         <cols>[federated.channel_mix].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{25e72b52-305d-44c9-8708-ead57130bc00}" /></worksheet>
+    <simple-id uuid="{7125f525-527d-4675-a72e-2c263f35a7df}" /></worksheet>
 
     <worksheet name="Channel Payment Heatmap">
       <layout-options>
@@ -715,7 +715,7 @@
         <rows>[federated.channel_mix].[none:channel:nk]</rows>
         <cols>[federated.channel_mix].[none:payment_method:nk]</cols>
       </table>
-    <simple-id uuid="{38c7312d-629b-4b84-8763-5b807e1b5542}" /></worksheet>
+    <simple-id uuid="{03546e4b-ffdf-4efd-8e80-52be5b2ee55e}" /></worksheet>
 
     <worksheet name="Top Products">
       <layout-options>
@@ -754,7 +754,7 @@
         <rows>[federated.product_perf].[none:product_name:nk]</rows>
         <cols>[federated.product_perf].[sum:net_revenue:qk]</cols>
       </table>
-    <simple-id uuid="{0449e908-335c-4291-b644-89eaebe8bb06}" /></worksheet>
+    <simple-id uuid="{6424554a-6a21-4dab-84d7-e82ad1a1acaa}" /></worksheet>
 
   </worksheets>
 
@@ -787,7 +787,7 @@ Revenue, orders, AOV, margin — daily trend and regional mix</run>
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{9133ffe7-cd08-4ee5-a80f-9e9c465c20d0}" />
+      <simple-id uuid="{4e9184d9-dcf3-4734-ab7f-2d2bd8e1a96e}" />
     </dashboard>
 
     <dashboard name="2. Stores and Regions">
@@ -813,7 +813,7 @@ Top stores (parameter-driven), store-type mix, regional margin</run>
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{7ce32b9b-51ed-4075-9669-6720384b789b}" />
+      <simple-id uuid="{319fc703-b8c6-480b-8dde-85ca4e8358f3}" />
     </dashboard>
 
     <dashboard name="3. Trends">
@@ -839,13 +839,42 @@ Category trends, channel × payment heatmap, top products</run>
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{ae9f16a9-005a-4605-af00-5b0ae6c9787d}" />
+      <simple-id uuid="{681553e8-389d-4350-a603-add267fa98e9}" />
     </dashboard>
   </dashboards>
 
   <windows source-height="30">
 
-    <window class="worksheet" maximized="false" name="KPI Net Revenue">
+    <window class="dashboard" maximized="true" name="1. Overview">
+      <viewpoints>
+        <viewpoint name="KPI Net Revenue" />
+        <viewpoint name="KPI Orders" />
+        <viewpoint name="KPI AOV" />
+        <viewpoint name="KPI Gross Margin" />
+        <viewpoint name="Revenue Trend" />
+        <viewpoint name="Revenue by Region" />
+        <viewpoint name="Category Revenue" />
+        <viewpoint name="Channel Revenue" />
+      </viewpoints>
+      <active id="-1" />
+    <simple-id uuid="{a201198f-c658-4f11-b5fa-e8771d77e56d}" /></window>
+    <window class="dashboard" name="2. Stores and Regions">
+      <viewpoints>
+        <viewpoint name="Top Stores by Revenue" />
+        <viewpoint name="Revenue by Store Type" />
+        <viewpoint name="Margin by Region" />
+      </viewpoints>
+      <active id="-1" />
+    <simple-id uuid="{669401a5-d230-4c89-b1ba-318c0bc0bca3}" /></window>
+    <window class="dashboard" name="3. Trends">
+      <viewpoints>
+        <viewpoint name="Category Trend" />
+        <viewpoint name="Channel Payment Heatmap" />
+        <viewpoint name="Top Products" />
+      </viewpoints>
+      <active id="-1" />
+    <simple-id uuid="{6e92a028-250a-45fa-9590-514386424601}" /></window>
+  <window class="worksheet" maximized="false" name="KPI Net Revenue">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -860,7 +889,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{ee0a35a0-9e85-4197-9e61-c11382ac1ac1}" /></window>
+    <simple-id uuid="{7b88e62f-acf7-43b6-92ac-953ad6afdb8b}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Orders">
       <cards>
@@ -877,7 +906,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{e0220006-5a58-477b-a871-6c4e0a1f78f6}" /></window>
+    <simple-id uuid="{8ce0c1af-7b9b-46e3-b722-c62ec11ebf7d}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI AOV">
       <cards>
@@ -894,7 +923,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{b51d786d-bb7e-4640-8bba-9838dc061d56}" /></window>
+    <simple-id uuid="{cf69929b-af57-4393-90ce-7674c9039ea6}" /></window>
 
     <window class="worksheet" maximized="false" name="KPI Gross Margin">
       <cards>
@@ -911,7 +940,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{24215c2a-31df-4173-9975-7297b83b26ce}" /></window>
+    <simple-id uuid="{3ae1e225-be29-40fd-b565-1dcee4e95f2c}" /></window>
 
     <window class="worksheet" maximized="false" name="Revenue Trend">
       <cards>
@@ -928,7 +957,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{2de06775-35a7-4a89-9d8f-bdf40466708c}" /></window>
+    <simple-id uuid="{3706aedf-30d1-40c1-93d5-74eb2d277057}" /></window>
 
     <window class="worksheet" maximized="false" name="Revenue by Region">
       <cards>
@@ -945,7 +974,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{7d01bb90-ad2d-416d-86d8-3ceb08e230c5}" /></window>
+    <simple-id uuid="{a92cbd8c-ed3c-4bd7-8f5e-0d0937a2a035}" /></window>
 
     <window class="worksheet" maximized="false" name="Revenue by Store Type">
       <cards>
@@ -962,7 +991,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{143d1b28-c0ed-451d-96fa-3ee9e1d0fc39}" /></window>
+    <simple-id uuid="{30c075c5-7504-4bb3-bb05-e84f48a05e18}" /></window>
 
     <window class="worksheet" maximized="false" name="Margin by Region">
       <cards>
@@ -979,7 +1008,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{25d04e4a-5446-461a-8d5d-9af751afea05}" /></window>
+    <simple-id uuid="{f4280893-5f65-4733-9f4b-536794b1c42d}" /></window>
 
     <window class="worksheet" maximized="false" name="Top Stores by Revenue">
       <cards>
@@ -996,7 +1025,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{fce9ae1b-1e13-481d-a0dd-ef15c28e72e5}" /></window>
+    <simple-id uuid="{bca9ed8f-96bc-40d3-9382-23d0f670bda9}" /></window>
 
     <window class="worksheet" maximized="false" name="Category Revenue">
       <cards>
@@ -1013,7 +1042,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{35b23fbe-6c87-4dc0-90ce-03f148c8a18b}" /></window>
+    <simple-id uuid="{91ad34f0-fc81-41ab-a70f-f0227331c1a4}" /></window>
 
     <window class="worksheet" maximized="false" name="Category Trend">
       <cards>
@@ -1030,7 +1059,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{532d14ca-f33a-43d6-8332-d7a172ecd4fe}" /></window>
+    <simple-id uuid="{1c3f27cb-5f82-43da-9824-613ab7bda2e9}" /></window>
 
     <window class="worksheet" maximized="false" name="Channel Revenue">
       <cards>
@@ -1047,7 +1076,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{f032c2ad-d850-4ba9-9269-89c85887c12a}" /></window>
+    <simple-id uuid="{f98fe349-c714-4af5-9f95-56de31193ce4}" /></window>
 
     <window class="worksheet" maximized="false" name="Channel Payment Heatmap">
       <cards>
@@ -1064,7 +1093,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{30bbdf0e-441e-4b59-bce7-426801564a5f}" /></window>
+    <simple-id uuid="{3af7b928-5a95-42cb-a340-5e167490c3c7}" /></window>
 
     <window class="worksheet" maximized="false" name="Top Products">
       <cards>
@@ -1081,36 +1110,7 @@ Category trends, channel × payment heatmap, top products</run>
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{ba3d9bed-3705-4676-bae9-97d69c6b7b4b}" /></window>
+    <simple-id uuid="{f644c7fa-03c5-48e2-a9eb-4bae85663c48}" /></window>
 
-    <window class="dashboard" maximized="true" name="1. Overview">
-      <viewpoints>
-        <viewpoint name="KPI Net Revenue" />
-        <viewpoint name="KPI Orders" />
-        <viewpoint name="KPI AOV" />
-        <viewpoint name="KPI Gross Margin" />
-        <viewpoint name="Revenue Trend" />
-        <viewpoint name="Revenue by Region" />
-        <viewpoint name="Category Revenue" />
-        <viewpoint name="Channel Revenue" />
-      </viewpoints>
-      <active id="-1" />
-    <simple-id uuid="{4bab816a-18dc-4099-a0cb-7895ce557441}" /></window>
-    <window class="dashboard" name="2. Stores and Regions">
-      <viewpoints>
-        <viewpoint name="Top Stores by Revenue" />
-        <viewpoint name="Revenue by Store Type" />
-        <viewpoint name="Margin by Region" />
-      </viewpoints>
-      <active id="-1" />
-    <simple-id uuid="{f4656386-6d09-4b24-8bd1-d4a0a07e448d}" /></window>
-    <window class="dashboard" name="3. Trends">
-      <viewpoints>
-        <viewpoint name="Category Trend" />
-        <viewpoint name="Channel Payment Heatmap" />
-        <viewpoint name="Top Products" />
-      </viewpoints>
-      <active id="-1" />
-    <simple-id uuid="{010d4894-3b37-44ff-aae7-eb7c624c7974}" /></window>
-  </windows>
+    </windows>
 </workbook>

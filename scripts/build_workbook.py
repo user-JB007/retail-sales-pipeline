@@ -2,7 +2,9 @@
 """Author Retail Tableau workbooks (.twb) and package as .twbx.
 
 Produces:
-  tableau/workbooks/Retail_Ops_Dashboard.twbx  (primary: Sales + Service pages)
+  tableau/workbooks/Retail_Ops_Dashboard_v3.twbx  (primary: Sales + Service pages)
+  tableau/workbooks/Retail_Sales_Dashboard_v3.twbx  (opens on Overview)
+  tableau/workbooks/Retail_Service_Dashboard_v3.twbx  (opens on Overview)
   tableau/workbooks/Retail_Sales_Report.twbx
   tableau/workbooks/Retail_Service_Satisfaction_Report.twbx
 
@@ -549,6 +551,71 @@ def create_sales_twb() -> str:
             <column-instance column='[store_name]' derivation='None' name='[none:store_name:nk]' pivot='key' type='nominal' />
             <column-instance column='[region]' derivation='None' name='[none:region:nk]' pivot='key' type='nominal' />
             <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+              <color column='[{ds}].[none:region:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[{ds}].[none:store_name:nk]</rows>
+        <cols>[{ds}].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+"""
+
+
+    worksheets = [
+        calc_kpi_sheet(ds, cap, "KPI Net Revenue", "NET REVENUE", "Calculation_Net_Revenue"),
+        calc_kpi_sheet(ds, cap, "KPI Orders", "ORDERS", "Calculation_Orders"),
+        calc_kpi_sheet(ds, cap, "KPI AOV", "AOV", "Calculation_AOV"),
+        calc_kpi_sheet(ds, cap, "KPI Gross Margin", "GROSS MARGIN %", "Calculation_Gross_Margin_Pct"),
+        line_sheet(ds, cap, "Revenue Trend", "Daily Net Revenue Trend", "transaction_date", "net_revenue", "Sum", "sum:net_revenue:qk"),
+        bar_sheet(ds, cap, "Revenue by Region", "Net Revenue by Region", "region", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
+        bar_sheet(ds, cap, "Revenue by Store Type", "Net Revenue by Store Type", "store_type", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
+        bar_sheet(ds, cap, "Margin by Region", "Gross Margin % by Region", "region", "Calculation_Gross_Margin_Pct", "User", "usr:Calculation_Gross_Margin_Pct:qk", horizontal=True),
+        top_stores_sheet,
+        bar_sheet(ds_cat, cap_cat, "Category Revenue", "Net Revenue by Category", "category", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
+        line_sheet(ds_cat, cap_cat, "Category Trend", "Category Net Revenue Trend", "transaction_date", "net_revenue", "Sum", "sum:net_revenue:qk"),
+        bar_sheet(ds_ch, cap_ch, "Channel Revenue", "Net Revenue by Channel", "channel", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
+        heatmap_sheet(ds_ch, cap_ch, "Channel Payment Heatmap", "Channel × Payment Method Revenue", "channel", "payment_method", "net_revenue", "Sum", "sum:net_revenue:qk", measure_dtype="real"),
+        bar_sheet(ds_prod, cap_prod, "Top Products", "Top Products by Net Revenue", "product_name", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True, color_dim="category"),
+    ]
+
+    sheet_names = [
+        "KPI Net Revenue", "KPI Orders", "KPI AOV", "KPI Gross Margin",
+        "Revenue Trend", "Revenue by Region", "Revenue by Store Type", "Margin by Region",
+        "Top Stores by Revenue", "Category Revenue", "Category Trend",
+        "Channel Revenue", "Channel Payment Heatmap", "Top Products",
+    ]
+
+    xml = f"""<?xml version='1.0' encoding='utf-8' ?>
+<!-- Retail Sales Report -->
+<!-- Built for Tableau Desktop / Tableau Public 2022+ -->
+<workbook original-version='18.1' source-build='2022.3.0 (20223.22.0908.1640)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+
+  <datasources>
+    <datasource hasconnection='false' inline='true' name='Parameters' version='18.1'>
+      <aliases enabled='yes' />
+      <column caption='Top N Stores' datatype='integer' name='[Top N Stores]' param-domain-type='range' role='measure' type='quantitative' value='10'>
+        <calculation class='tableau' formula='10' />
+        <range granularity='1' max='25' min='5' />
+      </column>
     </datasource>
 {textscan_ds(ds, cap, 'textscan.daily_sales_store', 'mart_daily_sales_by_store.csv', store_cols, store_fields, store_calcs)}
 {textscan_ds(ds_cat, cap_cat, 'textscan.daily_sales_category', 'mart_daily_sales_by_category.csv', cat_cols, cat_fields, '')}
@@ -1107,8 +1174,9 @@ def _dashboard_xml(
 def create_ops_twb() -> str:
     """Combined Retail Ops suite: two primary dashboards (Sales, Service).
 
-    Reuses worksheets/datasources from the sales + service builders, hides
-    individual KPI/chart sheet windows so Desktop tabs emphasize the two pages.
+    Reuses worksheets/datasources from the sales + service builders.
+    Dashboard windows are listed first (Sales maximized). Worksheet tabs stay
+    visible — hiding them previously caused Tableau Desktop to discard UI.
     """
     sales_root = ET.fromstring(create_sales_twb())
     service_root = ET.fromstring(create_service_twb())
@@ -1149,63 +1217,55 @@ def create_ops_twb() -> str:
                 ws.remove(sid)
             ws_xml_parts.append(ET.tostring(ws, encoding="unicode"))
 
-    # Sales page zones (1400×900)
-    # Top KPIs | Middle trend+region | Bottom channel+top stores
-    sales_zones = [
-        ("KPI Net Revenue", 20, 70, 320, 90),
-        ("KPI Orders", 360, 70, 320, 90),
-        ("KPI AOV", 700, 70, 320, 90),
-        ("KPI Gross Margin", 1040, 70, 340, 90),
-        ("Revenue Trend", 20, 175, 760, 340),
-        ("Revenue by Region", 800, 175, 580, 340),
-        ("Channel Revenue", 20, 530, 680, 340),
-        ("Top Stores by Revenue", 720, 530, 660, 340),
-    ]
-    # Service page: 5 KPIs | trend+reason | aging+SLA region+open reasons
-    service_zones = [
-        ("KPI Ticket Volume", 20, 70, 256, 90),
-        ("KPI Avg CSAT", 296, 70, 256, 90),
-        ("KPI Within SLA", 572, 70, 256, 90),
-        ("KPI Pending", 848, 70, 256, 90),
-        ("KPI Avg Resolve", 1124, 70, 256, 90),
-        ("Ticket Volume Trend", 20, 175, 700, 340),
-        ("Reason Mix", 740, 175, 320, 340),
-        ("Channel Mix", 1080, 175, 300, 340),
-        ("Open Aging Buckets", 20, 530, 440, 340),
-        ("Within SLA by Region", 480, 530, 440, 340),
-        ("Open Reasons", 940, 530, 440, 340),
-    ]
+    # Reuse proven Overview dashboards from the standalones (known to render in Desktop),
+    # renamed to Sales / Service. Avoid inventing new zone trees Tableau may reject.
+    def _overview_as(root: ET.Element, new_name: str, title_main: str, title_sub: str, subtitle: str) -> str:
+        dash = _clone(root.find("./dashboards/dashboard[@name='1. Overview']"))
+        dash.set("name", new_name)
+        # Drop simple-id / datasources / filled device layouts; ensure_content_models re-adds them
+        for tag in ("simple-id", "datasources"):
+            el = dash.find(tag)
+            if el is not None:
+                dash.remove(el)
+        dl = dash.find("devicelayouts")
+        if dl is not None:
+            for child in list(dl):
+                dl.remove(child)
+        # Refresh banner text runs if present
+        runs = dash.findall(".//zone[@type-name='text']/formatted-text/run")
+        if len(runs) >= 3:
+            runs[0].text = title_main
+            runs[1].text = f"  |  {title_sub}"
+            runs[2].text = "\n" + subtitle
+        # Strip trailing whitespace-only text nodes issues by re-serializing
+        return ET.tostring(dash, encoding="unicode")
 
-    sales_dash = _dashboard_xml(
+    sales_dash = _overview_as(
+        sales_root,
         "Sales",
         "Retail Ops",
         "Sales",
-        "Net revenue, orders, AOV, margin — trend, region, channel, top stores",
-        sales_zones,
-        banner_id=101,
-    ).replace("id='100'", "id='100'")  # layout-basic id from banner_id-1 = 100
-
-    service_dash = _dashboard_xml(
+        "Net revenue, orders, AOV, margin — trend, region, category, channel",
+    )
+    service_dash = _overview_as(
+        service_root,
         "Service",
         "Retail Ops",
         "Service & SLA",
-        "Ticket volume, CSAT, within-SLA, pending, resolve — aging and open reasons",
-        service_zones,
-        banner_id=201,
+        "Ticket volume, CSAT, within-SLA, pending — trend, reason, channel mix",
     )
 
-    # Fix layout-basic ids explicitly
-    sales_dash = sales_dash.replace(
-        "<zone h='900' id='100' type-name='layout-basic'",
-        "<zone h='900' id='100' type-name='layout-basic'",
-        1,
-    )
-    # banner_id=201 => layout id 200
-    service_dash = service_dash.replace(
-        f"<zone h='900' id='{201 - 1}' type-name='layout-basic'",
-        "<zone h='900' id='200' type-name='layout-basic'",
-        1,
-    )
+    # Zone names referenced by the Overview layouts (for viewpoints)
+    sales_zones = [
+        (z.get("name"),)
+        for z in ET.fromstring(f"<d>{sales_dash}</d>").find("dashboard").findall(".//zone")
+        if z.get("name")
+    ]
+    service_zones = [
+        (z.get("name"),)
+        for z in ET.fromstring(f"<d>{service_dash}</d>").find("dashboard").findall(".//zone")
+        if z.get("name")
+    ]
 
     actions = """
   <actions>
@@ -1218,29 +1278,11 @@ def create_ops_twb() -> str:
         <param name='target' value='Sales' />
       </command>
     </action>
-    <action caption='Filter Sales by Store' name='[Action_Ops_Filter_Store]'>
-      <activation auto-clear='true' type='on-select' />
-      <source dashboard='Sales' type='sheet' worksheet='Top Stores by Revenue' />
-      <command command='tsc:tsl-filter'>
-        <param name='exclude' value='Top Stores by Revenue' />
-        <param name='special-fields' value='all' />
-        <param name='target' value='Sales' />
-      </command>
-    </action>
     <action caption='Filter Service by Reason' name='[Action_Ops_Filter_Reason]'>
       <activation auto-clear='true' type='on-select' />
       <source dashboard='Service' type='sheet' worksheet='Reason Mix' />
       <command command='tsc:tsl-filter'>
         <param name='exclude' value='Reason Mix' />
-        <param name='special-fields' value='all' />
-        <param name='target' value='Service' />
-      </command>
-    </action>
-    <action caption='Filter Service by Region' name='[Action_Ops_Filter_Svc_Region]'>
-      <activation auto-clear='true' type='on-select' />
-      <source dashboard='Service' type='sheet' worksheet='Within SLA by Region' />
-      <command command='tsc:tsl-filter'>
-        <param name='exclude' value='Within SLA by Region' />
         <param name='special-fields' value='all' />
         <param name='target' value='Service' />
       </command>
@@ -1285,7 +1327,6 @@ def create_ops_twb() -> str:
   </dashboards>
 
   <windows source-height='30'>
-{sheet_windows_xml(sheet_names, hidden=True)}
     <window class='dashboard' maximized='true' name='Sales'>
       <viewpoints>
 {sales_views}
@@ -1298,11 +1339,40 @@ def create_ops_twb() -> str:
       </viewpoints>
       <active id='-1' />
     </window>
+{sheet_windows_xml(sheet_names, hidden=False)}
   </windows>
 </workbook>
 """
     return xml
 
+
+
+
+def reorder_windows_dashboards_first(xml: str) -> str:
+    """Put dashboard <window> entries first; keep the first dashboard maximized."""
+    root = ET.fromstring(xml)
+    windows_el = root.find("./windows")
+    if windows_el is None:
+        return xml
+    dash_wins = [w for w in list(windows_el) if w.get("class") == "dashboard"]
+    sheet_wins = [w for w in list(windows_el) if w.get("class") != "dashboard"]
+    for w in list(windows_el):
+        windows_el.remove(w)
+    for i, w in enumerate(dash_wins):
+        if i == 0:
+            w.set("maximized", "true")
+        elif "maximized" in w.attrib:
+            del w.attrib["maximized"]
+        windows_el.append(w)
+    for w in sheet_wins:
+        if "hidden" in w.attrib:
+            del w.attrib["hidden"]
+        windows_el.append(w)
+    ET.register_namespace("user", "http://www.tableausoftware.com/xml/user")
+    out = ET.tostring(root, encoding="unicode")
+    if not out.startswith("<?xml"):
+        out = "<?xml version='1.0' encoding='utf-8' ?>\n" + out
+    return out
 
 
 def package_twbx(twb_path: Path, twbx_path: Path, csv_files: list[Path], hyper_files: list[Path]) -> None:
@@ -1378,34 +1448,44 @@ def build_one(name: str, xml: str, csvs: list[str], hypers: list[str]) -> Path:
 
 
 def main() -> None:
+    sales_csvs = [
+        "mart_daily_sales_by_store.csv",
+        "mart_daily_sales_by_category.csv",
+        "mart_channel_mix.csv",
+        "mart_product_performance.csv",
+    ]
+    sales_hypers = ["daily_sales_by_store.hyper"]
+    service_csvs = ["mart_service_performance.csv"]
+    service_hypers = ["service_performance.hyper"]
+    ops_csvs = sales_csvs + service_csvs
+    ops_hypers = sales_hypers + service_hypers
+
+    # Combined Ops v3 — dashboards first, worksheets visible (no hidden=true)
+    build_one("Retail_Ops_Dashboard_v3", create_ops_twb(), ops_csvs, ops_hypers)
+    # Keep non-versioned alias in sync for older README links
+    build_one("Retail_Ops_Dashboard", create_ops_twb(), ops_csvs, ops_hypers)
+
+    # Reliable single-subject packs: open on Overview dashboard tab
     build_one(
-        "Retail_Ops_Dashboard",
-        create_ops_twb(),
-        [
-            "mart_daily_sales_by_store.csv",
-            "mart_daily_sales_by_category.csv",
-            "mart_channel_mix.csv",
-            "mart_product_performance.csv",
-            "mart_service_performance.csv",
-        ],
-        ["daily_sales_by_store.hyper", "service_performance.hyper"],
+        "Retail_Sales_Dashboard_v3",
+        reorder_windows_dashboards_first(create_sales_twb()),
+        sales_csvs,
+        sales_hypers,
     )
     build_one(
-        "Retail_Sales_Report",
-        create_sales_twb(),
-        [
-            "mart_daily_sales_by_store.csv",
-            "mart_daily_sales_by_category.csv",
-            "mart_channel_mix.csv",
-            "mart_product_performance.csv",
-        ],
-        ["daily_sales_by_store.hyper"],
+        "Retail_Service_Dashboard_v3",
+        reorder_windows_dashboards_first(create_service_twb()),
+        service_csvs,
+        service_hypers,
     )
+
+    # Legacy multi-page reports (still rebuilt)
+    build_one("Retail_Sales_Report", create_sales_twb(), sales_csvs, sales_hypers)
     build_one(
         "Retail_Service_Satisfaction_Report",
         create_service_twb(),
-        ["mart_service_performance.csv"],
-        ["service_performance.hyper"],
+        service_csvs,
+        service_hypers,
     )
 
 

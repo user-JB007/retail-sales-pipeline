@@ -1,6 +1,6 @@
 # Sales Report — Workbook Brief
 
-**Main suite:** [`Retail_Ops_Dashboard.twbx`](Retail_Ops_Dashboard.twbx) (Sales tab)
+**Main suite:** [`Retail_Ops_Dashboard_v3.twbx`](Retail_Ops_Dashboard_v3.twbx) (Sales tab)
 
 **Standalone pack:** [`Retail_Sales_Report.twbx`](Retail_Sales_Report.twbx)
 

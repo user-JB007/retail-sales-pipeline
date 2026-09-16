@@ -5,19 +5,25 @@ Mart CSVs, calculated-field notes, and screenshots support rebuild and GitHub pr
 
 ## Packaged workbooks
 
-| File | Dashboards | Parameter |
-|------|------------|-----------|
-| **[`workbooks/Retail_Ops_Dashboard.twbx`](workbooks/Retail_Ops_Dashboard.twbx)** *(main)* | **Sales** · **Service** | Top N Stores (5–25) · Aging Threshold Hours (24–336) |
-| [`workbooks/Retail_Sales_Report.twbx`](workbooks/Retail_Sales_Report.twbx) | 1. Overview · 2. Stores and Regions · 3. Trends | Top N Stores (5–25) |
-| [`workbooks/Retail_Service_Satisfaction_Report.twbx`](workbooks/Retail_Service_Satisfaction_Report.twbx) | 1. Overview · 2. SLA Performance · 3. Pending and Aging | Aging Threshold Hours (24–336) |
+| File | Dashboards | Notes |
+|------|------------|-------|
+| **[`workbooks/Retail_Ops_Dashboard_v3.twbx`](workbooks/Retail_Ops_Dashboard_v3.twbx)** *(combined)* | **Sales** · **Service** | Open this for both pages in one file |
+| [`workbooks/Retail_Sales_Dashboard_v3.twbx`](workbooks/Retail_Sales_Dashboard_v3.twbx) | 1. Overview · 2. Stores · 3. Trends | Reliable single — lands on Overview |
+| [`workbooks/Retail_Service_Dashboard_v3.twbx`](workbooks/Retail_Service_Dashboard_v3.twbx) | 1. Overview · 2. SLA · 3. Pending | Reliable single — lands on Overview |
+| [`workbooks/Retail_Sales_Report.twbx`](workbooks/Retail_Sales_Report.twbx) | same as Sales Dashboard v3 | Legacy filename |
+| [`workbooks/Retail_Service_Satisfaction_Report.twbx`](workbooks/Retail_Service_Satisfaction_Report.twbx) | same as Service Dashboard v3 | Legacy filename |
+
+**Avoid** `Retail_Ops_Dashboard_v2.twbx` — Tableau Desktop opens it as empty **Sheet 31** (dashboards/worksheets discarded).
 
 Each `.twbx` embeds the TWB XML, gold mart CSVs (`Data/Datasources/`), and Hyper extracts (`Data/Extracts/`).
 
 ### How to open
 
 1. Install [Tableau Desktop](https://www.tableau.com/products/desktop) or [Tableau Public](https://public.tableau.com/en-us/s/download).
-2. File → Open → **`Retail_Ops_Dashboard.twbx`** (or double-click). Standalone sales/service packs remain available.
-3. Land on **Sales**; switch to **Service** for SLA/CSAT. Worksheet KPI tabs are hidden — use the two dashboard tabs. Adjust **Top N Stores** / **Aging Threshold Hours** as needed.
+2. File → Open → **`Retail_Ops_Dashboard_v3.twbx`** (or double-click).
+3. You should see **Sales** and **Service** dashboard tabs with KPI cards + charts filled — not a blank sheet.
+4. Fallback: open `Retail_Sales_Dashboard_v3.twbx` / `Retail_Service_Dashboard_v3.twbx` and click the Overview dashboard tab (grid icon).
+5. Worksheet tabs are intentionally visible (v2 hid them; Tableau then nuked the UI).
 
 ### Rebuild
 

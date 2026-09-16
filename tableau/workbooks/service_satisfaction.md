@@ -1,6 +1,6 @@
 # Customer Satisfaction & Service Report — Workbook Brief
 
-**Main suite:** [`Retail_Ops_Dashboard.twbx`](Retail_Ops_Dashboard.twbx) (Service tab)
+**Main suite:** [`Retail_Ops_Dashboard_v3.twbx`](Retail_Ops_Dashboard_v3.twbx) (Service tab)
 
 **Standalone pack:** [`Retail_Service_Satisfaction_Report.twbx`](Retail_Service_Satisfaction_Report.twbx)
 

@@ -10,13 +10,25 @@ End-to-end retail sales and customer-service analytics on a bronze → silver �
 
 **Primary BI deliverable: packaged `.twbx` workbooks** (interactive — open in Tableau Desktop or Tableau Public). Screenshots below are secondary previews for GitHub browsing.
 
+> **Use v3 — not v2.** `Retail_Ops_Dashboard_v2.twbx` opens as an empty **Sheet 31** (Tableau discarded the dashboards). Download **v3** instead.
+
 | Workbook | Path | Notes |
 |----------|------|-------|
-| **Retail Ops Dashboard (main)** | [`tableau/workbooks/Retail_Ops_Dashboard.twbx`](tableau/workbooks/Retail_Ops_Dashboard.twbx) | **Open this first** — two dashboard tabs: **Sales** and **Service** |
-| Sales Report (standalone) | [`tableau/workbooks/Retail_Sales_Report.twbx`](tableau/workbooks/Retail_Sales_Report.twbx) | Legacy multi-page sales suite |
-| Customer Satisfaction & Service (standalone) | [`tableau/workbooks/Retail_Service_Satisfaction_Report.twbx`](tableau/workbooks/Retail_Service_Satisfaction_Report.twbx) | Legacy multi-page service suite |
+| **Retail Ops Dashboard v3 (combined)** | [`tableau/workbooks/Retail_Ops_Dashboard_v3.twbx`](tableau/workbooks/Retail_Ops_Dashboard_v3.twbx) | **Sales** + **Service** dashboard tabs with KPI cards + charts |
+| **Sales Dashboard v3** (reliable single) | [`tableau/workbooks/Retail_Sales_Dashboard_v3.twbx`](tableau/workbooks/Retail_Sales_Dashboard_v3.twbx) | Opens on **1. Overview** (KPI cards + charts filled) |
+| **Service Dashboard v3** (reliable single) | [`tableau/workbooks/Retail_Service_Dashboard_v3.twbx`](tableau/workbooks/Retail_Service_Dashboard_v3.twbx) | Opens on **1. Overview** (SLA/CSAT KPIs + charts) |
+| Sales Report (legacy multi-page) | [`tableau/workbooks/Retail_Sales_Report.twbx`](tableau/workbooks/Retail_Sales_Report.twbx) | Overview · Stores · Trends |
+| Service Report (legacy multi-page) | [`tableau/workbooks/Retail_Service_Satisfaction_Report.twbx`](tableau/workbooks/Retail_Service_Satisfaction_Report.twbx) | Overview · SLA · Pending |
 
-**Open:** Download [`Retail_Ops_Dashboard.twbx`](tableau/workbooks/Retail_Ops_Dashboard.twbx) → double-click (Desktop) or File → Open (Public). You should land on the **Sales** dashboard tab; switch to **Service** for SLA/CSAT. Individual KPI worksheets are hidden so the bottom tabs emphasize the two pages. CSV marts and Hyper extracts are embedded; no separate data hunt.
+### How to open (Desktop / Public)
+
+1. Download [`Retail_Ops_Dashboard_v3.twbx`](tableau/workbooks/Retail_Ops_Dashboard_v3.twbx) (or the Sales/Service Dashboard v3 files).
+2. Double-click, or File → Open in Tableau Desktop / Tableau Public.
+3. You should land on a **dashboard** tab (grid icon) — **Sales** (combined) or **1. Overview** (singles) — with KPI cards and charts filled. Switch tabs for the other page.
+4. If anything still looks empty, open the two singles: `Retail_Sales_Dashboard_v3.twbx` and `Retail_Service_Dashboard_v3.twbx` and click the dashboard tabs at the bottom.
+5. Do **not** open `Retail_Ops_Dashboard_v2.twbx` (known empty Sheet 31).
+
+CSV marts and Hyper extracts are embedded; no separate data hunt. Worksheet tabs stay visible on purpose (hiding them contributed to v2 discarding UI).
 
 **Rebuild after mart refresh:**
 
