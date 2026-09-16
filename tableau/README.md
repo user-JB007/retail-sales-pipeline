@@ -1,52 +1,63 @@
 # Tableau Report Pack — Retail Sales Pipeline
 
-**Primary BI tool for this repo: Tableau.**  
-Workbook briefs, calculated fields, gold mart CSVs, and GitHub screenshots. Rebuild in Tableau Desktop / Tableau Public from the mart CSVs under `tableau/marts/`.
+**Primary BI deliverable: packaged `.twbx` workbooks** under [`workbooks/`](workbooks/).  
+Mart CSVs, calculated-field notes, and screenshots support rebuild and GitHub preview.
 
-## Two workbooks (different business subjects)
+## Packaged workbooks
 
-| Workbook | Purpose | Screenshots |
-|----------|---------|-------------|
-| **Sales Report** | Revenue, orders, stores/regions, categories/products, trends | `sales_01_overview.png`, `sales_02_stores.png`, `sales_03_trends.png` |
-| **Customer Satisfaction & Service Report** | CSAT, SLA attainment, pending queue, aging, reason/channel | `service_01_overview.png`, `service_02_sla.png`, `service_03_pending_aging.png` |
+| File | Dashboards | Parameter |
+|------|------------|-----------|
+| [`workbooks/Retail_Sales_Report.twbx`](workbooks/Retail_Sales_Report.twbx) | 1. Overview · 2. Stores and Regions · 3. Trends | Top N Stores (5–25) |
+| [`workbooks/Retail_Service_Satisfaction_Report.twbx`](workbooks/Retail_Service_Satisfaction_Report.twbx) | 1. Overview · 2. SLA Performance · 3. Pending and Aging | Aging Threshold Hours (24–336) |
 
-## View on GitHub (no Desktop required)
+Each `.twbx` embeds the TWB XML, gold mart CSVs (`Data/Datasources/`), and Hyper extracts (`Data/Extracts/`).
 
-Open the root README **Tableau Reports** section, or browse `tableau/screenshots/`.
+### How to open
 
-Regenerate after refreshing gold marts:
+1. Install [Tableau Desktop](https://www.tableau.com/products/desktop) or [Tableau Public](https://public.tableau.com/en-us/s/download).
+2. File → Open → select the `.twbx` (or double-click the file).
+3. Use dashboard tabs; adjust the parameter on the ranking / aging sheets.
+
+### Rebuild
 
 ```bash
-python scripts/run_local.py --engine pandas
-python src/viz/generate_tableau_pages.py --export-marts
+# from repo root (venv with tableauhyperapi)
+python scripts/build_hyper.py
+python scripts/build_workbook.py
 ```
 
-Committed mart CSVs live in `tableau/marts/` so Desktop recreation works without re-running the full pipeline.
+Authoring scripts mirror the airline-maintenance-ops pattern (`scripts/build_workbook.py`, `scripts/build_hyper.py`).
 
-## Rebuild in Tableau Desktop / Public
+## Two workbooks
 
-1. **Connect** → Text file → load CSVs from `tableau/marts/` (or `data/gold/<mart>/data.csv` after a local run).
-2. Suggested data sources:
+| Workbook | Purpose | Screenshots (secondary) |
+|----------|---------|-------------------------|
+| **Sales Report** | Revenue, orders, stores/regions, categories/products, trends | `screenshots/sales_*.png` |
+| **Customer Satisfaction & Service Report** | CSAT, SLA attainment, pending queue, aging, reason/channel | `screenshots/service_*.png` |
+
+## Data sources (embedded + `marts/`)
 
 | File | Role |
 |------|------|
-| `mart_daily_sales_by_store.csv` | Store/day performance |
+| `mart_daily_sales_by_store.csv` | Store/day performance (Sales primary) |
 | `mart_daily_sales_by_category.csv` | Category trends |
-| `mart_customer_lifetime_value.csv` | Customer LTV / loyalty |
-| `mart_product_performance.csv` | Product rankings |
 | `mart_channel_mix.csv` | Channel × payment |
+| `mart_product_performance.csv` | Product rankings |
 | `mart_service_performance.csv` | Service tickets / SLA / CSAT |
+| `mart_customer_lifetime_value.csv` | Customer LTV (available for extension) |
 
-3. Build sheets & dashboards using briefs in [`workbooks/`](workbooks/).
-4. Paste calculated fields from [`calculations/`](calculations/) (includes LOD examples).
+## Calculated fields
+
+See [`calculations/`](calculations/) — includes AOV, Gross Margin %, Store Share LOD, Within SLA %, Aging Bucket, Pending Flag.
 
 ## Folder map
 
 ```
 tableau/
 ├── README.md
-├── workbooks/          # sheet / filter / calc briefs per workbook
-├── calculations/       # Tableau-style calculated fields
-├── screenshots/        # PNGs embedded in root README
-└── marts/              # CSVs for Desktop rebuild
+├── workbooks/          # .twb + .twbx (primary)
+├── calculations/
+├── screenshots/        # secondary GitHub preview
+├── marts/              # gold CSVs
+└── Data/Extracts/      # .hyper (also packaged inside twbx)
 ```

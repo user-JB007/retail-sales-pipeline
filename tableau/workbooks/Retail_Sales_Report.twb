@@ -1,0 +1,1122 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- Retail Sales Report -->
+<!-- Built for Tableau Desktop / Tableau Public 2022+ -->
+<workbook original-version='18.1' source-build='2022.3.0 (20223.22.0908.1640)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+
+  <datasources>
+    <datasource hasconnection='false' inline='true' name='Parameters' version='18.1'>
+      <aliases enabled='yes' />
+      <column caption='Top N Stores' datatype='integer' name='[Top N Stores]' param-domain-type='range' role='measure' type='quantitative' value='10'>
+        <calculation class='tableau' formula='10' />
+        <range granularity='1' max='25' min='5' />
+      </column>
+    </datasource>
+
+    <datasource caption='Daily Sales by Store' inline='true' name='federated.daily_sales_store' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='mart_daily_sales_by_store.csv' name='textscan.daily_sales_store'>
+            <connection class='textscan' directory='Data/Datasources' filename='mart_daily_sales_by_store.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.daily_sales_store' name='mart_daily_sales_by_store.csv' table='[mart_daily_sales_by_store#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+
+            <column datatype='date' name='transaction_date' ordinal='0' />
+            <column datatype='string' name='store_id' ordinal='1' />
+            <column datatype='string' name='store_name' ordinal='2' />
+            <column datatype='string' name='region' ordinal='3' />
+            <column datatype='string' name='store_type' ordinal='4' />
+            <column datatype='integer' name='transactions' ordinal='5' />
+            <column datatype='integer' name='units_sold' ordinal='6' />
+            <column datatype='real' name='gross_revenue' ordinal='7' />
+            <column datatype='real' name='net_revenue' ordinal='8' />
+            <column datatype='real' name='discount_total' ordinal='9' />
+            <column datatype='real' name='cogs' ordinal='10' />
+            <column datatype='real' name='gross_profit' ordinal='11' />
+            <column datatype='real' name='avg_order_value' ordinal='12' />
+            <column datatype='real' name='gross_margin_pct' ordinal='13' />
+
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[mart_daily_sales_by_store.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+
+      <column caption='Net Revenue Total' datatype='real' default-format='cCurrency' name='[Calculation_Net_Revenue]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([net_revenue])' />
+      </column>
+      <column caption='Order Count' datatype='integer' default-format='n#,##0' name='[Calculation_Orders]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([transactions])' />
+      </column>
+      <column caption='AOV' datatype='real' default-format='cCurrency' name='[Calculation_AOV]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([net_revenue]) / NULLIF(SUM([transactions]), 0)' />
+      </column>
+      <column caption='Gross Margin %' datatype='real' default-format='p0.0%' name='[Calculation_Gross_Margin_Pct]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([gross_profit]) / NULLIF(SUM([net_revenue]), 0)' />
+      </column>
+      <column caption='Store Share of Total' datatype='real' default-format='p0.0%' name='[Calculation_Store_Share]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([net_revenue]) / { FIXED : SUM([net_revenue]) }' />
+      </column>
+      <column caption='Region Avg Daily Revenue' datatype='real' default-format='cCurrency' name='[Calculation_Region_Avg_Daily]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='{ FIXED [region] : AVG([net_revenue]) }' />
+      </column>
+      <column caption='Top N Store Filter' datatype='boolean' name='[Calculation_Top_N_Store_Filter]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='INDEX() &lt;= [Parameters].[Top N Stores]' />
+      </column>
+
+
+      <column caption='Transaction Date' datatype='date' name='[transaction_date]' role='dimension' type='ordinal' />
+      <column caption='Store Id' datatype='string' name='[store_id]' role='dimension' type='nominal' />
+      <column caption='Store Name' datatype='string' name='[store_name]' role='dimension' type='nominal' />
+      <column caption='Region' datatype='string' name='[region]' role='dimension' type='nominal' />
+      <column caption='Store Type' datatype='string' name='[store_type]' role='dimension' type='nominal' />
+      <column caption='Transactions' datatype='integer' name='[transactions]' role='measure' type='quantitative' />
+      <column caption='Units Sold' datatype='integer' name='[units_sold]' role='measure' type='quantitative' />
+      <column caption='Gross Revenue' datatype='real' name='[gross_revenue]' role='measure' type='quantitative' />
+      <column caption='Net Revenue' datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+      <column caption='Discount Total' datatype='real' name='[discount_total]' role='measure' type='quantitative' />
+      <column caption='Cogs' datatype='real' name='[cogs]' role='measure' type='quantitative' />
+      <column caption='Gross Profit' datatype='real' name='[gross_profit]' role='measure' type='quantitative' />
+      <column caption='Avg Order Value' datatype='real' name='[avg_order_value]' role='measure' type='quantitative' />
+      <column caption='Gross Margin Pct' datatype='real' name='[gross_margin_pct]' role='measure' type='quantitative' />
+
+      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+    </datasource>
+
+
+    <datasource caption='Daily Sales by Category' inline='true' name='federated.daily_sales_category' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='mart_daily_sales_by_category.csv' name='textscan.daily_sales_category'>
+            <connection class='textscan' directory='Data/Datasources' filename='mart_daily_sales_by_category.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.daily_sales_category' name='mart_daily_sales_by_category.csv' table='[mart_daily_sales_by_category#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+
+            <column datatype='date' name='transaction_date' ordinal='0' />
+            <column datatype='string' name='category' ordinal='1' />
+            <column datatype='integer' name='transactions' ordinal='2' />
+            <column datatype='integer' name='units_sold' ordinal='3' />
+            <column datatype='real' name='net_revenue' ordinal='4' />
+            <column datatype='real' name='gross_profit' ordinal='5' />
+
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[mart_daily_sales_by_category.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+
+
+      <column caption='Transaction Date' datatype='date' name='[transaction_date]' role='dimension' type='ordinal' />
+      <column caption='Category' datatype='string' name='[category]' role='dimension' type='nominal' />
+      <column caption='Transactions' datatype='integer' name='[transactions]' role='measure' type='quantitative' />
+      <column caption='Units Sold' datatype='integer' name='[units_sold]' role='measure' type='quantitative' />
+      <column caption='Net Revenue' datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+      <column caption='Gross Profit' datatype='real' name='[gross_profit]' role='measure' type='quantitative' />
+
+      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+    </datasource>
+
+
+    <datasource caption='Channel Mix' inline='true' name='federated.channel_mix' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='mart_channel_mix.csv' name='textscan.channel_mix'>
+            <connection class='textscan' directory='Data/Datasources' filename='mart_channel_mix.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.channel_mix' name='mart_channel_mix.csv' table='[mart_channel_mix#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+
+            <column datatype='date' name='transaction_date' ordinal='0' />
+            <column datatype='string' name='channel' ordinal='1' />
+            <column datatype='string' name='payment_method' ordinal='2' />
+            <column datatype='integer' name='transactions' ordinal='3' />
+            <column datatype='real' name='net_revenue' ordinal='4' />
+
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[mart_channel_mix.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+
+
+      <column caption='Transaction Date' datatype='date' name='[transaction_date]' role='dimension' type='ordinal' />
+      <column caption='Channel' datatype='string' name='[channel]' role='dimension' type='nominal' />
+      <column caption='Payment Method' datatype='string' name='[payment_method]' role='dimension' type='nominal' />
+      <column caption='Transactions' datatype='integer' name='[transactions]' role='measure' type='quantitative' />
+      <column caption='Net Revenue' datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+
+      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+    </datasource>
+
+
+    <datasource caption='Product Performance' inline='true' name='federated.product_perf' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='mart_product_performance.csv' name='textscan.product_perf'>
+            <connection class='textscan' directory='Data/Datasources' filename='mart_product_performance.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.product_perf' name='mart_product_performance.csv' table='[mart_product_performance#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+
+            <column datatype='string' name='product_id' ordinal='0' />
+            <column datatype='string' name='category' ordinal='1' />
+            <column datatype='string' name='brand' ordinal='2' />
+            <column datatype='integer' name='units_sold' ordinal='3' />
+            <column datatype='real' name='net_revenue' ordinal='4' />
+            <column datatype='real' name='gross_profit' ordinal='5' />
+            <column datatype='integer' name='order_count' ordinal='6' />
+            <column datatype='string' name='product_name' ordinal='7' />
+            <column datatype='real' name='unit_price' ordinal='8' />
+
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[mart_product_performance.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+
+
+      <column caption='Product Id' datatype='string' name='[product_id]' role='dimension' type='nominal' />
+      <column caption='Category' datatype='string' name='[category]' role='dimension' type='nominal' />
+      <column caption='Brand' datatype='string' name='[brand]' role='dimension' type='nominal' />
+      <column caption='Units Sold' datatype='integer' name='[units_sold]' role='measure' type='quantitative' />
+      <column caption='Net Revenue' datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+      <column caption='Gross Profit' datatype='real' name='[gross_profit]' role='measure' type='quantitative' />
+      <column caption='Order Count' datatype='integer' name='[order_count]' role='measure' type='quantitative' />
+      <column caption='Product Name' datatype='string' name='[product_name]' role='dimension' type='nominal' />
+      <column caption='Unit Price' datatype='real' name='[unit_price]' role='measure' type='quantitative' />
+
+      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+    </datasource>
+
+  </datasources>
+
+  <actions>
+    <action caption='Filter by Region' name='[Action_Filter_Region]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='1. Overview' type='sheet' worksheet='Revenue by Region' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='Revenue by Region' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='1. Overview' />
+      </command>
+    </action>
+    <action caption='Navigate to Stores' name='[Action_Nav_Stores]'>
+      <activation type='on-select' />
+      <source dashboard='1. Overview' type='sheet' worksheet='Revenue by Region' />
+      <command command='tsc:goto-sheet'>
+        <param name='sheet' value='2. Stores and Regions' />
+      </command>
+    </action>
+  </actions>
+
+  <worksheets>
+
+    <worksheet name='KPI Net Revenue'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>NET REVENUE</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='real' name='[Calculation_Net_Revenue]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Net_Revenue]' derivation='User' name='[usr:Calculation_Net_Revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.daily_sales_store].[usr:Calculation_Net_Revenue:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI Orders'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>ORDERS</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='real' name='[Calculation_Orders]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Orders]' derivation='User' name='[usr:Calculation_Orders:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.daily_sales_store].[usr:Calculation_Orders:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI AOV'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>AOV</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='real' name='[Calculation_AOV]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_AOV]' derivation='User' name='[usr:Calculation_AOV:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.daily_sales_store].[usr:Calculation_AOV:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI Gross Margin'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>GROSS MARGIN %</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='real' name='[Calculation_Gross_Margin_Pct]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Gross_Margin_Pct]' derivation='User' name='[usr:Calculation_Gross_Margin_Pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.daily_sales_store].[usr:Calculation_Gross_Margin_Pct:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='Revenue Trend'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Daily Net Revenue Trend</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='date' name='[transaction_date]' role='dimension' type='ordinal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[transaction_date]' derivation='None' name='[none:transaction_date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Line' />
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_store].[sum:net_revenue:qk]</rows>
+        <cols>[federated.daily_sales_store].[none:transaction_date:ok]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Revenue by Region'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Net Revenue by Region</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='string' name='[region]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[region]' derivation='None' name='[none:region:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_store].[none:region:nk]</rows>
+        <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Revenue by Store Type'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Net Revenue by Store Type</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='string' name='[store_type]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[store_type]' derivation='None' name='[none:store_type:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_store].[none:store_type:nk]</rows>
+        <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Margin by Region'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Gross Margin % by Region</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='string' name='[region]' role='dimension' type='nominal' />
+            <column datatype='real' name='[Calculation_Gross_Margin_Pct]' role='measure' type='quantitative' />
+            <column-instance column='[region]' derivation='None' name='[none:region:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_Gross_Margin_Pct]' derivation='User' name='[usr:Calculation_Gross_Margin_Pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_store].[none:region:nk]</rows>
+        <cols>[federated.daily_sales_store].[usr:Calculation_Gross_Margin_Pct:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Top Stores by Revenue'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Top Stores by Net Revenue (Top N parameter)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Store' name='federated.daily_sales_store' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='Parameters'>
+            <column caption='Top N Stores' datatype='integer' name='[Top N Stores]' param-domain-type='range' role='measure' type='quantitative' value='10'>
+              <calculation class='tableau' formula='10' />
+              <range granularity='1' max='25' min='5' />
+            </column>
+          </datasource-dependencies>
+          <datasource-dependencies datasource='federated.daily_sales_store'>
+            <column datatype='string' name='[store_name]' role='dimension' type='nominal' />
+            <column datatype='string' name='[region]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column datatype='boolean' name='[Calculation_Top_N_Store_Filter]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='INDEX() &lt;= [Parameters].[Top N Stores]' />
+            </column>
+            <column-instance column='[store_name]' derivation='None' name='[none:store_name:nk]' pivot='key' type='nominal' />
+            <column-instance column='[region]' derivation='None' name='[none:region:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_Top_N_Store_Filter]' derivation='None' name='[none:Calculation_Top_N_Store_Filter:nk]' pivot='key' type='nominal' />
+          </datasource-dependencies>
+          <filter class='categorical' column='[federated.daily_sales_store].[none:Calculation_Top_N_Store_Filter:nk]' filter-group='1'>
+            <groupfilter function='member' level='[none:Calculation_Top_N_Store_Filter:nk]' member='&quot;True&quot;' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+              <color column='[federated.daily_sales_store].[none:region:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_store].[none:store_name:nk]</rows>
+        <cols>[federated.daily_sales_store].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Category Revenue'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Net Revenue by Category</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Category' name='federated.daily_sales_category' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_category'>
+            <column datatype='string' name='[category]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[category]' derivation='None' name='[none:category:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_category].[none:category:nk]</rows>
+        <cols>[federated.daily_sales_category].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Category Trend'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Category Net Revenue Trend</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Daily Sales by Category' name='federated.daily_sales_category' />
+          </datasources>
+          <datasource-dependencies datasource='federated.daily_sales_category'>
+            <column datatype='date' name='[transaction_date]' role='dimension' type='ordinal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[transaction_date]' derivation='None' name='[none:transaction_date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Line' />
+          </pane>
+        </panes>
+        <rows>[federated.daily_sales_category].[sum:net_revenue:qk]</rows>
+        <cols>[federated.daily_sales_category].[none:transaction_date:ok]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Channel Revenue'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Net Revenue by Channel</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Channel Mix' name='federated.channel_mix' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.channel_mix'>
+            <column datatype='string' name='[channel]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[channel]' derivation='None' name='[none:channel:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.channel_mix].[none:channel:nk]</rows>
+        <cols>[federated.channel_mix].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Channel Payment Heatmap'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Channel × Payment Method Revenue</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Channel Mix' name='federated.channel_mix' />
+          </datasources>
+          <datasource-dependencies datasource='federated.channel_mix'>
+            <column datatype='string' name='[channel]' role='dimension' type='nominal' />
+            <column datatype='string' name='[payment_method]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[channel]' derivation='None' name='[none:channel:nk]' pivot='key' type='nominal' />
+            <column-instance column='[payment_method]' derivation='None' name='[none:payment_method:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Square' />
+            <encodings>
+              <color column='[federated.channel_mix].[sum:net_revenue:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.channel_mix].[none:channel:nk]</rows>
+        <cols>[federated.channel_mix].[none:payment_method:nk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Top Products'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Top Products by Net Revenue</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Product Performance' name='federated.product_perf' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.product_perf'>
+            <column datatype='string' name='[product_name]' role='dimension' type='nominal' />
+            <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
+            <column-instance column='[product_name]' derivation='None' name='[none:product_name:nk]' pivot='key' type='nominal' />
+            <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
+            <column datatype='string' name='[category]' role='dimension' type='nominal' />
+            <column-instance column='[category]' derivation='None' name='[none:category:nk]' pivot='key' type='nominal' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+              <color column='[federated.product_perf].[none:category:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.product_perf].[none:product_name:nk]</rows>
+        <cols>[federated.product_perf].[sum:net_revenue:qk]</cols>
+      </table>
+    </worksheet>
+
+  </worksheets>
+
+  <dashboards>
+    <dashboard name='1. Overview'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='100' type-name='layout-basic' w='1400' x='0' y='0'>
+          <zone h='50' id='101' type-name='text' w='1360' x='20' y='10'>
+            <formatted-text>
+              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>Retail Sales</run>
+              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  Overview</run>
+              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>
+Revenue, orders, AOV, margin — daily trend and regional mix</run>
+            </formatted-text>
+          </zone>
+          <zone h='90' id='102' name='KPI Net Revenue' w='320' x='20' y='70' />
+          <zone h='90' id='103' name='KPI Orders' w='320' x='360' y='70' />
+          <zone h='90' id='104' name='KPI AOV' w='320' x='700' y='70' />
+          <zone h='90' id='105' name='KPI Gross Margin' w='340' x='1040' y='70' />
+          <zone h='340' id='106' name='Revenue Trend' w='760' x='20' y='175' />
+          <zone h='340' id='107' name='Revenue by Region' w='580' x='800' y='175' />
+          <zone h='340' id='108' name='Category Revenue' w='680' x='20' y='530' />
+          <zone h='340' id='109' name='Channel Revenue' w='660' x='720' y='530' />
+        </zone>
+      </zones>
+    </dashboard>
+
+    <dashboard name='2. Stores and Regions'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='200' type-name='layout-basic' w='1400' x='0' y='0'>
+          <zone h='50' id='201' type-name='text' w='1360' x='20' y='10'>
+            <formatted-text>
+              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>Retail Sales</run>
+              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  Stores and Regions</run>
+              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>
+Top stores (parameter-driven), store-type mix, regional margin</run>
+            </formatted-text>
+          </zone>
+          <zone h='400' id='202' name='Top Stores by Revenue' w='700' x='20' y='70' />
+          <zone h='400' id='203' name='Revenue by Store Type' w='640' x='740' y='70' />
+          <zone h='370' id='204' name='Margin by Region' w='1360' x='20' y='490' />
+        </zone>
+      </zones>
+    </dashboard>
+
+    <dashboard name='3. Trends'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='300' type-name='layout-basic' w='1400' x='0' y='0'>
+          <zone h='50' id='301' type-name='text' w='1360' x='20' y='10'>
+            <formatted-text>
+              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>Retail Sales</run>
+              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  Trends</run>
+              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>
+Category trends, channel × payment heatmap, top products</run>
+            </formatted-text>
+          </zone>
+          <zone h='360' id='302' name='Category Trend' w='700' x='20' y='70' />
+          <zone h='360' id='303' name='Channel Payment Heatmap' w='640' x='740' y='70' />
+          <zone h='400' id='304' name='Top Products' w='1360' x='20' y='450' />
+        </zone>
+      </zones>
+    </dashboard>
+  </dashboards>
+
+  <windows source-height='30'>
+
+    <window class='worksheet' name='KPI Net Revenue'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI Orders'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI AOV'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI Gross Margin'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Revenue Trend'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Revenue by Region'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Revenue by Store Type'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Margin by Region'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Top Stores by Revenue'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Category Revenue'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Category Trend'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Channel Revenue'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Channel Payment Heatmap'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Top Products'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='dashboard' maximized='true' name='1. Overview'>
+      <viewpoints>
+        <viewpoint name='KPI Net Revenue' />
+        <viewpoint name='KPI Orders' />
+        <viewpoint name='KPI AOV' />
+        <viewpoint name='KPI Gross Margin' />
+        <viewpoint name='Revenue Trend' />
+        <viewpoint name='Revenue by Region' />
+        <viewpoint name='Category Revenue' />
+        <viewpoint name='Channel Revenue' />
+      </viewpoints>
+      <active id='-1' />
+    </window>
+    <window class='dashboard' name='2. Stores and Regions'>
+      <viewpoints>
+        <viewpoint name='Top Stores by Revenue' />
+        <viewpoint name='Revenue by Store Type' />
+        <viewpoint name='Margin by Region' />
+      </viewpoints>
+      <active id='-1' />
+    </window>
+    <window class='dashboard' name='3. Trends'>
+      <viewpoints>
+        <viewpoint name='Category Trend' />
+        <viewpoint name='Channel Payment Heatmap' />
+        <viewpoint name='Top Products' />
+      </viewpoints>
+      <active id='-1' />
+    </window>
+  </windows>
+</workbook>

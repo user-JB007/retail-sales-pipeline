@@ -1,20 +1,22 @@
 # Sales Report — Workbook Brief
 
+**Packaged workbook:** [`Retail_Sales_Report.twbx`](Retail_Sales_Report.twbx)
+
 **Department:** Retail Analytics · Sales
 
-## Pages
+## Dashboards
 
-1. **Overview** — Net revenue, orders, AOV, MoM; daily revenue; region & category mix.
-2. **Stores & Regions** — Top stores, store-type mix, regional margin.
-3. **Trends** — Monthly region trends, channel mix, top products.
+1. **Overview** — Net revenue, orders, AOV, gross margin %; daily revenue; region & category & channel mix.
+2. **Stores and Regions** — Top stores (Top N Stores parameter), store-type mix, regional margin.
+3. **Trends** — Category trends, channel × payment heatmap, top products.
 
-## Primary sources
+## Primary sources (embedded in twbx)
 
 - `mart_daily_sales_by_store.csv`
 - `mart_daily_sales_by_category.csv`
 - `mart_channel_mix.csv`
 - `mart_product_performance.csv`
 
-## Suggested filters
+## Parameter
 
-Date range, Region, Channel, Store type, Category.
+- **Top N Stores** (range 5–25, default 10)

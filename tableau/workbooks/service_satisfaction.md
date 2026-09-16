@@ -1,17 +1,19 @@
 # Customer Satisfaction & Service Report — Workbook Brief
 
+**Packaged workbook:** [`Retail_Service_Satisfaction_Report.twbx`](Retail_Service_Satisfaction_Report.twbx)
+
 **Department:** Retail Analytics · Customer Service
 
-## Pages
+## Dashboards
 
-1. **Overview** — Ticket volume, avg CSAT, within-SLA rate, pending count; reason & channel mix; CSAT distribution.
-2. **SLA Performance** — Within / beyond / pending SLA mix; resolve hours by priority; breach by channel; within-SLA by region.
-3. **Pending & Aging** — Open queue age buckets, priority backlog, open reasons, oldest tickets.
+1. **Overview** — Ticket volume, avg CSAT, within-SLA rate, pending count; reason & channel mix; CSAT by channel.
+2. **SLA Performance** — Within / beyond / pending SLA mix; resolve hours by priority; channel × priority heatmap; within-SLA by region.
+3. **Pending and Aging** — Open-queue age buckets, priority backlog, open reasons.
 
-## Primary sources
+## Primary sources (embedded in twbx)
 
 - `mart_service_performance.csv`
 
-## Suggested filters
+## Parameter
 
-Date opened, Region, Channel, Priority, Reason, SLA status.
+- **Aging Threshold Hours** (range 24–336, default 72)

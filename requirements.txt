@@ -21,3 +21,4 @@ pytest>=7.0.0
 # Power BI–style report page screenshots
 matplotlib>=3.7.0
 seaborn>=0.13.0
+tableauhyperapi>=0.0.18500

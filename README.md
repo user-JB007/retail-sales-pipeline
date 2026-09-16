@@ -8,10 +8,28 @@ End-to-end retail sales and customer-service analytics on a bronze → silver �
 
 ## Tableau Reports
 
-**Primary BI tool: Tableau.** Pipeline code and two Tableau workbooks live in this repo — dashboard pages are visible on GitHub without Tableau Desktop.
+**Primary BI deliverable: packaged `.twbx` workbooks** (interactive — open in Tableau Desktop or Tableau Public). Screenshots below are secondary previews for GitHub browsing.
 
-### Report 1 — Sales Report
-Revenue, orders, stores/regions, categories/products, and trends.
+| Workbook | Path |
+|----------|------|
+| **Sales Report** | [`tableau/workbooks/Retail_Sales_Report.twbx`](tableau/workbooks/Retail_Sales_Report.twbx) |
+| **Customer Satisfaction & Service Report** | [`tableau/workbooks/Retail_Service_Satisfaction_Report.twbx`](tableau/workbooks/Retail_Service_Satisfaction_Report.twbx) |
+
+**Open:** Download the `.twbx` → double-click (Desktop) or File → Open (Public). CSV marts and Hyper extracts are embedded; no separate data hunt.
+
+**Rebuild after mart refresh:**
+
+```bash
+python scripts/run_local.py --engine pandas
+python src/viz/generate_tableau_pages.py --export-marts
+python scripts/build_hyper.py
+python scripts/build_workbook.py
+```
+
+Details, calculated fields, and parameters: [`tableau/README.md`](tableau/README.md)
+
+### Report 1 — Sales Report (preview)
+Revenue, orders, stores/regions, categories/products, and trends. Parameter: **Top N Stores**.
 
 | Page | Preview |
 |------|---------|
@@ -19,21 +37,14 @@ Revenue, orders, stores/regions, categories/products, and trends.
 | Stores & Regions | ![Stores](tableau/screenshots/sales_02_stores.png) |
 | Trends | ![Trends](tableau/screenshots/sales_03_trends.png) |
 
-### Report 2 — Customer Satisfaction & Service Report
-Complaints and service tickets: CSAT, resolutions within/beyond SLA, pending queue, aging, reason and channel breakdowns.
+### Report 2 — Customer Satisfaction & Service Report (preview)
+CSAT, within/beyond SLA, pending queue, aging, reason and channel. Parameter: **Aging Threshold Hours**.
 
 | Page | Preview |
 |------|---------|
 | Overview | ![Service Overview](tableau/screenshots/service_01_overview.png) |
 | SLA Performance | ![SLA](tableau/screenshots/service_02_sla.png) |
 | Pending & Aging | ![Pending](tableau/screenshots/service_03_pending_aging.png) |
-
-**Desktop / Public rebuild** (workbook briefs, LOD calcs, mart CSVs): [`tableau/README.md`](tableau/README.md)
-
-```bash
-python scripts/run_local.py --engine pandas
-python src/viz/generate_tableau_pages.py --export-marts
-```
 
 ---
 

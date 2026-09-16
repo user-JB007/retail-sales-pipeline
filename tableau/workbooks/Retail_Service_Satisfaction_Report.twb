@@ -1,0 +1,1101 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- Retail Customer Satisfaction and Service Report -->
+<!-- Built for Tableau Desktop / Tableau Public 2022+ -->
+<workbook original-version='18.1' source-build='2022.3.0 (20223.22.0908.1640)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+
+  <datasources>
+    <datasource hasconnection='false' inline='true' name='Parameters' version='18.1'>
+      <aliases enabled='yes' />
+      <column caption='Aging Threshold Hours' datatype='integer' name='[Aging Threshold Hours]' param-domain-type='range' role='measure' type='quantitative' value='72'>
+        <calculation class='tableau' formula='72' />
+        <range granularity='1' max='336' min='24' />
+      </column>
+    </datasource>
+
+    <datasource caption='Service Performance' inline='true' name='federated.service_tickets' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='mart_service_performance.csv' name='textscan.service_tickets'>
+            <connection class='textscan' directory='Data/Datasources' filename='mart_service_performance.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.service_tickets' name='mart_service_performance.csv' table='[mart_service_performance#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+
+            <column datatype='string' name='ticket_id' ordinal='0' />
+            <column datatype='datetime' name='opened_at' ordinal='1' />
+            <column datatype='datetime' name='resolved_at' ordinal='2' />
+            <column datatype='datetime' name='sla_due_at' ordinal='3' />
+            <column datatype='date' name='opened_date' ordinal='4' />
+            <column datatype='string' name='status' ordinal='5' />
+            <column datatype='string' name='priority' ordinal='6' />
+            <column datatype='string' name='reason' ordinal='7' />
+            <column datatype='string' name='channel' ordinal='8' />
+            <column datatype='string' name='store_id' ordinal='9' />
+            <column datatype='string' name='store_name' ordinal='10' />
+            <column datatype='string' name='region' ordinal='11' />
+            <column datatype='string' name='customer_id' ordinal='12' />
+            <column datatype='real' name='csat' ordinal='13' />
+            <column datatype='real' name='resolve_hours' ordinal='14' />
+            <column datatype='real' name='age_hours' ordinal='15' />
+            <column datatype='integer' name='is_open' ordinal='16' />
+            <column datatype='string' name='sla_breach' ordinal='17' />
+            <column datatype='string' name='sla_status' ordinal='18' />
+
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[mart_service_performance.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+
+      <column caption='Ticket Volume' datatype='integer' name='[Calculation_Ticket_Volume]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='COUNTD([ticket_id])' />
+      </column>
+      <column caption='Avg CSAT' datatype='real' default-format='n#,##0.00' name='[Calculation_Avg_CSAT]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='AVG([csat])' />
+      </column>
+      <column caption='Within SLA %' datatype='real' default-format='p0.0%' name='[Calculation_Within_SLA_Pct]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM(IF [sla_status]=&quot;within_sla&quot; THEN 1 ELSE 0 END) / NULLIF(SUM(IF [is_open]=0 THEN 1 ELSE 0 END), 0)' />
+      </column>
+      <column caption='Pending Count' datatype='integer' name='[Calculation_Pending]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM(IF [status]=&quot;pending&quot; OR [status]=&quot;escalated&quot; THEN 1 ELSE 0 END)' />
+      </column>
+      <column caption='Pending Flag' datatype='integer' name='[Calculation_Pending_Flag]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='IF [status]=&quot;pending&quot; OR [status]=&quot;escalated&quot; THEN 1 ELSE 0 END' />
+      </column>
+      <column caption='Aging Bucket' datatype='string' name='[Calculation_Aging_Bucket]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='IF [age_hours] &lt; 24 THEN &quot;0-24h&quot; ELSEIF [age_hours] &lt; 48 THEN &quot;24-48h&quot; ELSEIF [age_hours] &lt; 72 THEN &quot;48-72h&quot; ELSEIF [age_hours] &lt; 168 THEN &quot;3-7d&quot; ELSE &quot;7d+&quot; END' />
+      </column>
+      <column caption='Beyond Aging Threshold' datatype='boolean' name='[Calculation_Beyond_Aging]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='[age_hours] &gt;= [Parameters].[Aging Threshold Hours]' />
+      </column>
+      <column caption='Avg Resolve Hours' datatype='real' default-format='n#,##0.0' name='[Calculation_Avg_Resolve]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='AVG([resolve_hours])' />
+      </column>
+
+
+      <column caption='Ticket Id' datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+      <column caption='Opened At' datatype='datetime' name='[opened_at]' role='dimension' type='ordinal' />
+      <column caption='Resolved At' datatype='datetime' name='[resolved_at]' role='dimension' type='ordinal' />
+      <column caption='Sla Due At' datatype='datetime' name='[sla_due_at]' role='dimension' type='ordinal' />
+      <column caption='Opened Date' datatype='date' name='[opened_date]' role='dimension' type='ordinal' />
+      <column caption='Status' datatype='string' name='[status]' role='dimension' type='nominal' />
+      <column caption='Priority' datatype='string' name='[priority]' role='dimension' type='nominal' />
+      <column caption='Reason' datatype='string' name='[reason]' role='dimension' type='nominal' />
+      <column caption='Channel' datatype='string' name='[channel]' role='dimension' type='nominal' />
+      <column caption='Store Id' datatype='string' name='[store_id]' role='dimension' type='nominal' />
+      <column caption='Store Name' datatype='string' name='[store_name]' role='dimension' type='nominal' />
+      <column caption='Region' datatype='string' name='[region]' role='dimension' type='nominal' />
+      <column caption='Customer Id' datatype='string' name='[customer_id]' role='dimension' type='nominal' />
+      <column caption='Csat' datatype='real' name='[csat]' role='measure' type='quantitative' />
+      <column caption='Resolve Hours' datatype='real' name='[resolve_hours]' role='measure' type='quantitative' />
+      <column caption='Age Hours' datatype='real' name='[age_hours]' role='measure' type='quantitative' />
+      <column caption='Is Open' datatype='integer' name='[is_open]' role='measure' type='quantitative' />
+      <column caption='Sla Breach' datatype='string' name='[sla_breach]' role='dimension' type='nominal' />
+      <column caption='Sla Status' datatype='string' name='[sla_status]' role='dimension' type='nominal' />
+
+      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+    </datasource>
+
+  </datasources>
+
+  <actions>
+    <action caption='Filter by Reason' name='[Action_Filter_Reason]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='1. Overview' type='sheet' worksheet='Reason Mix' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='Reason Mix' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='1. Overview' />
+      </command>
+    </action>
+    <action caption='Filter by SLA Status' name='[Action_Filter_SLA]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='2. SLA Performance' type='sheet' worksheet='SLA Status Mix' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='SLA Status Mix' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='2. SLA Performance' />
+      </command>
+    </action>
+  </actions>
+
+  <worksheets>
+
+    <worksheet name='KPI Ticket Volume'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>TICKET VOLUME</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='real' name='[Calculation_Ticket_Volume]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Ticket_Volume]' derivation='User' name='[usr:Calculation_Ticket_Volume:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.service_tickets].[usr:Calculation_Ticket_Volume:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI Avg CSAT'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>AVG CSAT</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='real' name='[Calculation_Avg_CSAT]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Avg_CSAT]' derivation='User' name='[usr:Calculation_Avg_CSAT:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.service_tickets].[usr:Calculation_Avg_CSAT:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI Within SLA'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>WITHIN SLA %</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='real' name='[Calculation_Within_SLA_Pct]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Within_SLA_Pct]' derivation='User' name='[usr:Calculation_Within_SLA_Pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.service_tickets].[usr:Calculation_Within_SLA_Pct:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI Pending'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>PENDING / ESCALATED</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='real' name='[Calculation_Pending]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Pending]' derivation='User' name='[usr:Calculation_Pending:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.service_tickets].[usr:Calculation_Pending:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='Ticket Volume Trend'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Ticket Volume by Opened Date</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='date' name='[opened_date]' role='dimension' type='ordinal' />
+            <column datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+            <column-instance column='[opened_date]' derivation='None' name='[none:opened_date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[ticket_id]' derivation='CountD' name='[cd:ticket_id:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Line' />
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[cd:ticket_id:qk]</rows>
+        <cols>[federated.service_tickets].[none:opened_date:ok]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Reason Mix'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Tickets by Reason</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[reason]' role='dimension' type='nominal' />
+            <column datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+            <column-instance column='[reason]' derivation='None' name='[none:reason:nk]' pivot='key' type='nominal' />
+            <column-instance column='[ticket_id]' derivation='CountD' name='[cd:ticket_id:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:reason:nk]</rows>
+        <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Channel Mix'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Tickets by Channel</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[channel]' role='dimension' type='nominal' />
+            <column datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+            <column-instance column='[channel]' derivation='None' name='[none:channel:nk]' pivot='key' type='nominal' />
+            <column-instance column='[ticket_id]' derivation='CountD' name='[cd:ticket_id:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:channel:nk]</rows>
+        <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='SLA Status Mix'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>SLA Status Mix (Within / Beyond / Pending)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[sla_status]' role='dimension' type='nominal' />
+            <column datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+            <column-instance column='[sla_status]' derivation='None' name='[none:sla_status:nk]' pivot='key' type='nominal' />
+            <column-instance column='[ticket_id]' derivation='CountD' name='[cd:ticket_id:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:sla_status:nk]</rows>
+        <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Resolve by Priority'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Avg Resolve Hours by Priority</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[priority]' role='dimension' type='nominal' />
+            <column datatype='real' name='[Calculation_Avg_Resolve]' role='measure' type='quantitative' />
+            <column-instance column='[priority]' derivation='None' name='[none:priority:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_Avg_Resolve]' derivation='User' name='[usr:Calculation_Avg_Resolve:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:priority:nk]</rows>
+        <cols>[federated.service_tickets].[usr:Calculation_Avg_Resolve:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Breach by Channel'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Ticket Volume Heatmap: Channel × Priority</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[channel]' role='dimension' type='nominal' />
+            <column datatype='string' name='[priority]' role='dimension' type='nominal' />
+            <column datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+            <column-instance column='[channel]' derivation='None' name='[none:channel:nk]' pivot='key' type='nominal' />
+            <column-instance column='[priority]' derivation='None' name='[none:priority:nk]' pivot='key' type='nominal' />
+            <column-instance column='[ticket_id]' derivation='CountD' name='[cd:ticket_id:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Square' />
+            <encodings>
+              <color column='[federated.service_tickets].[cd:ticket_id:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:channel:nk]</rows>
+        <cols>[federated.service_tickets].[none:priority:nk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='KPI Avg Resolve'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10' bold='true'>AVG RESOLVE (HRS)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='real' name='[Calculation_Avg_Resolve]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_Avg_Resolve]' derivation='User' name='[usr:Calculation_Avg_Resolve:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Text' />
+            <encodings>
+              <text column='[federated.service_tickets].[usr:Calculation_Avg_Resolve:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows /><cols />
+      </table>
+    </worksheet>
+
+    <worksheet name='Within SLA by Region'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Within-SLA Ticket Share Proxy by Region</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[region]' role='dimension' type='nominal' />
+            <column datatype='real' name='[Calculation_Within_SLA_Pct]' role='measure' type='quantitative' />
+            <column-instance column='[region]' derivation='None' name='[none:region:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_Within_SLA_Pct]' derivation='User' name='[usr:Calculation_Within_SLA_Pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:region:nk]</rows>
+        <cols>[federated.service_tickets].[usr:Calculation_Within_SLA_Pct:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Open Aging Buckets'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Open Ticket Aging Buckets</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='Parameters'>
+            <column caption='Aging Threshold Hours' datatype='integer' name='[Aging Threshold Hours]' param-domain-type='range' role='measure' type='quantitative' value='72'>
+              <calculation class='tableau' formula='72' />
+              <range granularity='1' max='336' min='24' />
+            </column>
+          </datasource-dependencies>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[Calculation_Aging_Bucket]' role='dimension' type='nominal' />
+            <column datatype='integer' name='[is_open]' role='measure' type='quantitative' />
+            <column datatype='string' name='[ticket_id]' role='dimension' type='nominal' />
+            <column-instance column='[Calculation_Aging_Bucket]' derivation='None' name='[none:Calculation_Aging_Bucket:nk]' pivot='key' type='nominal' />
+            <column-instance column='[ticket_id]' derivation='CountD' name='[cd:ticket_id:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[is_open]' derivation='Sum' name='[sum:is_open:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <filter class='quantitative' column='[federated.service_tickets].[sum:is_open:qk]' include-null='true'>
+            <min>1</min>
+          </filter>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[cd:ticket_id:qk]</rows>
+        <cols>[federated.service_tickets].[none:Calculation_Aging_Bucket:nk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Open by Priority'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Open Backlog by Priority</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[priority]' role='dimension' type='nominal' />
+            <column datatype='integer' name='[is_open]' role='measure' type='quantitative' />
+            <column-instance column='[priority]' derivation='None' name='[none:priority:nk]' pivot='key' type='nominal' />
+            <column-instance column='[is_open]' derivation='Sum' name='[sum:is_open:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:priority:nk]</rows>
+        <cols>[federated.service_tickets].[sum:is_open:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='Open Reasons'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Open Tickets by Reason</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[reason]' role='dimension' type='nominal' />
+            <column datatype='integer' name='[is_open]' role='measure' type='quantitative' />
+            <column-instance column='[reason]' derivation='None' name='[none:reason:nk]' pivot='key' type='nominal' />
+            <column-instance column='[is_open]' derivation='Sum' name='[sum:is_open:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:reason:nk]</rows>
+        <cols>[federated.service_tickets].[sum:is_open:qk]</cols>
+      </table>
+    </worksheet>
+
+    <worksheet name='CSAT by Channel'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Avg CSAT by Channel</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Service Performance' name='federated.service_tickets' />
+            <datasource name='Parameters' />
+          </datasources>
+          <datasource-dependencies datasource='federated.service_tickets'>
+            <column datatype='string' name='[channel]' role='dimension' type='nominal' />
+            <column datatype='real' name='[Calculation_Avg_CSAT]' role='measure' type='quantitative' />
+            <column-instance column='[channel]' derivation='None' name='[none:channel:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Calculation_Avg_CSAT]' derivation='User' name='[usr:Calculation_Avg_CSAT:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view><breakdown value='auto' /></view>
+            <mark class='Bar' />
+            <encodings>
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.service_tickets].[none:channel:nk]</rows>
+        <cols>[federated.service_tickets].[usr:Calculation_Avg_CSAT:qk]</cols>
+      </table>
+    </worksheet>
+
+  </worksheets>
+
+  <dashboards>
+    <dashboard name='1. Overview'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='100' type-name='layout-basic' w='1400' x='0' y='0'>
+          <zone h='50' id='101' type-name='text' w='1360' x='20' y='10'>
+            <formatted-text>
+              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>Customer Satisfaction and Service</run>
+              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  Overview</run>
+              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>
+Ticket volume, CSAT, within-SLA rate, pending — reason and channel mix</run>
+            </formatted-text>
+          </zone>
+          <zone h='90' id='102' name='KPI Ticket Volume' w='320' x='20' y='70' />
+          <zone h='90' id='103' name='KPI Avg CSAT' w='320' x='360' y='70' />
+          <zone h='90' id='104' name='KPI Within SLA' w='320' x='700' y='70' />
+          <zone h='90' id='105' name='KPI Pending' w='340' x='1040' y='70' />
+          <zone h='340' id='106' name='Ticket Volume Trend' w='700' x='20' y='175' />
+          <zone h='340' id='107' name='CSAT by Channel' w='640' x='740' y='175' />
+          <zone h='340' id='108' name='Reason Mix' w='680' x='20' y='530' />
+          <zone h='340' id='109' name='Channel Mix' w='660' x='720' y='530' />
+        </zone>
+      </zones>
+    </dashboard>
+
+    <dashboard name='2. SLA Performance'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='200' type-name='layout-basic' w='1400' x='0' y='0'>
+          <zone h='50' id='201' type-name='text' w='1360' x='20' y='10'>
+            <formatted-text>
+              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>Customer Satisfaction and Service</run>
+              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  SLA Performance</run>
+              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>
+Within / beyond / pending SLA, resolve hours by priority, breach patterns, regional attainment</run>
+            </formatted-text>
+          </zone>
+          <zone h='360' id='202' name='SLA Status Mix' w='460' x='20' y='70' />
+          <zone h='360' id='203' name='Resolve by Priority' w='440' x='500' y='70' />
+          <zone h='360' id='204' name='KPI Avg Resolve' w='420' x='960' y='70' />
+          <zone h='400' id='205' name='Breach by Channel' w='700' x='20' y='450' />
+          <zone h='400' id='206' name='Within SLA by Region' w='640' x='740' y='450' />
+        </zone>
+      </zones>
+    </dashboard>
+
+    <dashboard name='3. Pending and Aging'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='300' type-name='layout-basic' w='1400' x='0' y='0'>
+          <zone h='50' id='301' type-name='text' w='1360' x='20' y='10'>
+            <formatted-text>
+              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>Customer Satisfaction and Service</run>
+              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  Pending and Aging</run>
+              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>
+Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open reasons</run>
+            </formatted-text>
+          </zone>
+          <zone h='400' id='302' name='Open Aging Buckets' w='700' x='20' y='70' />
+          <zone h='400' id='303' name='Open by Priority' w='640' x='740' y='70' />
+          <zone h='370' id='304' name='Open Reasons' w='1360' x='20' y='490' />
+        </zone>
+      </zones>
+    </dashboard>
+  </dashboards>
+
+  <windows source-height='30'>
+
+    <window class='worksheet' name='KPI Ticket Volume'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI Avg CSAT'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI Within SLA'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI Pending'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Ticket Volume Trend'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Reason Mix'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Channel Mix'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='SLA Status Mix'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Resolve by Priority'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Breach by Channel'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='KPI Avg Resolve'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Within SLA by Region'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Open Aging Buckets'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Open by Priority'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='Open Reasons'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='worksheet' name='CSAT by Channel'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'><card type='columns' /></strip>
+          <strip size='2147483647'><card type='rows' /></strip>
+          <strip size='30'><card type='title' /></strip>
+        </edge>
+      </cards>
+    </window>
+
+    <window class='dashboard' maximized='true' name='1. Overview'>
+      <viewpoints>
+        <viewpoint name='KPI Ticket Volume' />
+        <viewpoint name='KPI Avg CSAT' />
+        <viewpoint name='KPI Within SLA' />
+        <viewpoint name='KPI Pending' />
+        <viewpoint name='Ticket Volume Trend' />
+        <viewpoint name='CSAT by Channel' />
+        <viewpoint name='Reason Mix' />
+        <viewpoint name='Channel Mix' />
+      </viewpoints>
+      <active id='-1' />
+    </window>
+    <window class='dashboard' name='2. SLA Performance'>
+      <viewpoints>
+        <viewpoint name='SLA Status Mix' />
+        <viewpoint name='Resolve by Priority' />
+        <viewpoint name='KPI Avg Resolve' />
+        <viewpoint name='Breach by Channel' />
+        <viewpoint name='Within SLA by Region' />
+      </viewpoints>
+      <active id='-1' />
+    </window>
+    <window class='dashboard' name='3. Pending and Aging'>
+      <viewpoints>
+        <viewpoint name='Open Aging Buckets' />
+        <viewpoint name='Open by Priority' />
+        <viewpoint name='Open Reasons' />
+      </viewpoints>
+      <active id='-1' />
+    </window>
+  </windows>
+</workbook>
