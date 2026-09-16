@@ -466,9 +466,6 @@ def create_sales_twb() -> str:
       <column caption='Region Avg Daily Revenue' datatype='real' default-format='cCurrency' name='[Calculation_Region_Avg_Daily]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='{ FIXED [region] : AVG([net_revenue]) }' />
       </column>
-      <column caption='Top N Store Filter' datatype='boolean' name='[Calculation_Top_N_Store_Filter]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='INDEX() &lt;= [Parameters].[Top N Stores]' />
-      </column>
 """
 
     cat_cols = """
@@ -529,7 +526,7 @@ def create_sales_twb() -> str:
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Top Stores by Net Revenue (Top N parameter)</run>
+            <run fontcolor='#1F2A37' fontname='Arial' fontsize='12' bold='true'>Top Stores by Net Revenue</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -549,80 +546,9 @@ def create_sales_twb() -> str:
             <column datatype='string' name='[store_name]' role='dimension' type='nominal' />
             <column datatype='string' name='[region]' role='dimension' type='nominal' />
             <column datatype='real' name='[net_revenue]' role='measure' type='quantitative' />
-            <column datatype='boolean' name='[Calculation_Top_N_Store_Filter]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='INDEX() &lt;= [Parameters].[Top N Stores]' />
-            </column>
             <column-instance column='[store_name]' derivation='None' name='[none:store_name:nk]' pivot='key' type='nominal' />
             <column-instance column='[region]' derivation='None' name='[none:region:nk]' pivot='key' type='nominal' />
             <column-instance column='[net_revenue]' derivation='Sum' name='[sum:net_revenue:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[Calculation_Top_N_Store_Filter]' derivation='None' name='[none:Calculation_Top_N_Store_Filter:nk]' pivot='key' type='nominal' />
-          </datasource-dependencies>
-          <filter class='categorical' column='[{ds}].[none:Calculation_Top_N_Store_Filter:nk]' filter-group='1'>
-            <groupfilter function='member' level='[none:Calculation_Top_N_Store_Filter:nk]' member='&quot;True&quot;' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
-          </filter>
-          <aggregation value='true' />
-        </view>
-        <style />
-        <panes>
-          <pane selection-relaxation-option='selection-relaxation-allow'>
-            <view><breakdown value='auto' /></view>
-            <mark class='Bar' />
-            <encodings>
-              <color column='[{ds}].[none:region:nk]' />
-            </encodings>
-          </pane>
-        </panes>
-        <rows>[{ds}].[none:store_name:nk]</rows>
-        <cols>[{ds}].[sum:net_revenue:qk]</cols>
-      </table>
-    </worksheet>
-"""
-
-    worksheets = [
-        calc_kpi_sheet(ds, cap, "KPI Net Revenue", "NET REVENUE", "Calculation_Net_Revenue"),
-        calc_kpi_sheet(ds, cap, "KPI Orders", "ORDERS", "Calculation_Orders"),
-        calc_kpi_sheet(ds, cap, "KPI AOV", "AOV", "Calculation_AOV"),
-        calc_kpi_sheet(ds, cap, "KPI Gross Margin", "GROSS MARGIN %", "Calculation_Gross_Margin_Pct"),
-        line_sheet(ds, cap, "Revenue Trend", "Daily Net Revenue Trend", "transaction_date", "net_revenue", "Sum", "sum:net_revenue:qk"),
-        bar_sheet(ds, cap, "Revenue by Region", "Net Revenue by Region", "region", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
-        bar_sheet(ds, cap, "Revenue by Store Type", "Net Revenue by Store Type", "store_type", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
-        bar_sheet(ds, cap, "Margin by Region", "Gross Margin % by Region", "region", "Calculation_Gross_Margin_Pct", "User", "usr:Calculation_Gross_Margin_Pct:qk", horizontal=True),
-        top_stores_sheet,
-        bar_sheet(ds_cat, cap_cat, "Category Revenue", "Net Revenue by Category", "category", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
-        line_sheet(ds_cat, cap_cat, "Category Trend", "Category Net Revenue Trend", "transaction_date", "net_revenue", "Sum", "sum:net_revenue:qk"),
-        bar_sheet(ds_ch, cap_ch, "Channel Revenue", "Net Revenue by Channel", "channel", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True),
-        heatmap_sheet(ds_ch, cap_ch, "Channel Payment Heatmap", "Channel × Payment Method Revenue", "channel", "payment_method", "net_revenue", "Sum", "sum:net_revenue:qk", measure_dtype="real"),
-        bar_sheet(ds_prod, cap_prod, "Top Products", "Top Products by Net Revenue", "product_name", "net_revenue", "Sum", "sum:net_revenue:qk", horizontal=True, color_dim="category"),
-    ]
-
-    sheet_names = [
-        "KPI Net Revenue", "KPI Orders", "KPI AOV", "KPI Gross Margin",
-        "Revenue Trend", "Revenue by Region", "Revenue by Store Type", "Margin by Region",
-        "Top Stores by Revenue", "Category Revenue", "Category Trend",
-        "Channel Revenue", "Channel Payment Heatmap", "Top Products",
-    ]
-
-    xml = f"""<?xml version='1.0' encoding='utf-8' ?>
-<!-- Retail Sales Report -->
-<!-- Built for Tableau Desktop / Tableau Public 2022+ -->
-<workbook original-version='18.1' source-build='2022.3.0 (20223.22.0908.1640)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
-  <document-format-change-manifest>
-    <_.fcp.MarkAnimation.true...MarkAnimation />
-    <SheetIdentifierTracking />
-    <WindowsPersistSimpleIdentifiers />
-  </document-format-change-manifest>
-  <preferences>
-    <preference name='ui.encoding.shelf.height' value='24' />
-    <preference name='ui.shelf.height' value='26' />
-  </preferences>
-
-  <datasources>
-    <datasource hasconnection='false' inline='true' name='Parameters' version='18.1'>
-      <aliases enabled='yes' />
-      <column caption='Top N Stores' datatype='integer' name='[Top N Stores]' param-domain-type='range' role='measure' type='quantitative' value='10'>
-        <calculation class='tableau' formula='10' />
-        <range granularity='1' max='25' min='5' />
-      </column>
     </datasource>
 {textscan_ds(ds, cap, 'textscan.daily_sales_store', 'mart_daily_sales_by_store.csv', store_cols, store_fields, store_calcs)}
 {textscan_ds(ds_cat, cap_cat, 'textscan.daily_sales_category', 'mart_daily_sales_by_category.csv', cat_cols, cat_fields, '')}
