@@ -11,6 +11,7 @@ a separate data hunt. Hyper extracts are included when present.
 
 from __future__ import annotations
 
+import uuid
 import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -28,6 +29,68 @@ def esc(s: str) -> str:
         .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
+
+
+def new_uuid() -> str:
+    return str(uuid.uuid4())
+
+
+def simple_id_xml(indent: str = "      ") -> str:
+    return f"{indent}<simple-id uuid='{new_uuid()}' />"
+
+
+def ensure_content_models(root: ET.Element) -> None:
+    """Guarantee Tableau content-model required children (worksheet / dashboard / window).
+
+    Worksheets: trailing <simple-id> after <table>.
+    Dashboards: <datasources>, <devicelayouts />, <simple-id> in order after size/zones.
+    Windows: trailing <simple-id>.
+    """
+    # Discover all workbook-level datasource names for dashboard refs
+    ds_names: list[str] = []
+    for ds in root.findall("./datasources/datasource"):
+        name = ds.get("name")
+        if name and name not in ds_names:
+            ds_names.append(name)
+    if "Parameters" not in ds_names:
+        ds_names.append("Parameters")
+
+    for ws in root.findall("./worksheets/worksheet"):
+        if ws.find("simple-id") is None:
+            ET.SubElement(ws, "simple-id", {"uuid": new_uuid()})
+
+    for dash in root.findall("./dashboards/dashboard"):
+        children = list(dash)
+        tags = [c.tag for c in children]
+
+        if "datasources" not in tags:
+            ds_el = ET.Element("datasources")
+            for name in ds_names:
+                ET.SubElement(ds_el, "datasource", {"name": name})
+            if "zones" in tags:
+                dash.insert(tags.index("zones"), ds_el)
+            else:
+                dash.append(ds_el)
+            children = list(dash)
+            tags = [c.tag for c in children]
+
+        if "devicelayouts" not in tags:
+            dl = ET.Element("devicelayouts")
+            if "zones" in tags:
+                dash.insert(tags.index("zones") + 1, dl)
+            else:
+                dash.append(dl)
+            children = list(dash)
+            tags = [c.tag for c in children]
+
+        if "simple-id" not in tags:
+            ET.SubElement(dash, "simple-id", {"uuid": new_uuid()})
+
+    for win in root.findall("./windows/window"):
+        if win.find("simple-id") is None:
+            ET.SubElement(win, "simple-id", {"uuid": new_uuid()})
+
+
 
 
 def kpi_sheet(ds: str, caption: str, name: str, title: str, measure: str, derivation: str, instance: str, dtype: str = "real") -> str:
@@ -586,6 +649,8 @@ def create_sales_twb() -> str:
           <zone h='340' id='109' name='Channel Revenue' w='660' x='720' y='530' />
         </zone>
       </zones>
+      <devicelayouts />
+{simple_id_xml()}
     </dashboard>
 
     <dashboard name='2. Stores and Regions'>
@@ -609,6 +674,8 @@ def create_sales_twb() -> str:
           <zone h='370' id='204' name='Margin by Region' w='1360' x='20' y='490' />
         </zone>
       </zones>
+      <devicelayouts />
+{simple_id_xml()}
     </dashboard>
 
     <dashboard name='3. Trends'>
@@ -632,6 +699,8 @@ def create_sales_twb() -> str:
           <zone h='400' id='304' name='Top Products' w='1360' x='20' y='450' />
         </zone>
       </zones>
+      <devicelayouts />
+{simple_id_xml()}
     </dashboard>
   </dashboards>
 
@@ -933,6 +1002,8 @@ def create_service_twb() -> str:
           <zone h='340' id='109' name='Channel Mix' w='660' x='720' y='530' />
         </zone>
       </zones>
+      <devicelayouts />
+{simple_id_xml()}
     </dashboard>
 
     <dashboard name='2. SLA Performance'>
@@ -958,6 +1029,8 @@ def create_service_twb() -> str:
           <zone h='400' id='206' name='Within SLA by Region' w='640' x='740' y='450' />
         </zone>
       </zones>
+      <devicelayouts />
+{simple_id_xml()}
     </dashboard>
 
     <dashboard name='3. Pending and Aging'>
@@ -981,6 +1054,8 @@ def create_service_twb() -> str:
           <zone h='370' id='304' name='Open Reasons' w='1360' x='20' y='490' />
         </zone>
       </zones>
+      <devicelayouts />
+{simple_id_xml()}
     </dashboard>
   </dashboards>
 
@@ -1041,8 +1116,29 @@ def build_one(name: str, xml: str, csvs: list[str], hypers: list[str]) -> Path:
     OUT.mkdir(parents=True, exist_ok=True)
     twb_path = OUT / f"{name}.twb"
     twbx_path = OUT / f"{name}.twbx"
-    ET.fromstring(xml)
-    twb_path.write_text(xml, encoding="utf-8")
+    root = ET.fromstring(xml)
+    ensure_content_models(root)
+    ET.register_namespace("user", "http://www.tableausoftware.com/xml/user")
+    xml_out = ET.tostring(root, encoding="unicode")
+    if not xml_out.startswith("<?xml"):
+        xml_out = "<?xml version='1.0' encoding='utf-8' ?>\n" + xml_out
+    ET.fromstring(xml_out)
+    # Validate content model presence
+    root2 = ET.fromstring(xml_out)
+    for ws in root2.findall("./worksheets/worksheet"):
+        if ws.find("simple-id") is None:
+            raise SystemExit(f"worksheet missing simple-id: {ws.get('name')}")
+    for dash in root2.findall("./dashboards/dashboard"):
+        tags = [c.tag for c in list(dash)]
+        for req in ("datasources", "zones", "devicelayouts", "simple-id"):
+            if req not in tags:
+                raise SystemExit(f"dashboard {dash.get('name')} missing {req}; has {tags}")
+        # order checks: datasources before zones, zones before devicelayouts, simple-id last
+        if tags.index("datasources") > tags.index("zones"):
+            raise SystemExit(f"dashboard {dash.get('name')}: datasources must precede zones")
+        if tags.index("devicelayouts") < tags.index("zones"):
+            raise SystemExit(f"dashboard {dash.get('name')}: devicelayouts must follow zones")
+    twb_path.write_text(xml_out, encoding="utf-8")
     print(f"Wrote {twb_path} ({twb_path.stat().st_size} bytes)")
     package_twbx(
         twb_path,
