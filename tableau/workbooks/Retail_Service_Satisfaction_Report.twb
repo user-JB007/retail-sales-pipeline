@@ -169,7 +169,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{5ae9ff15-09a5-4303-807f-1c4bd9cfbbe9}" /></worksheet>
+    <simple-id uuid="{14a81a2e-4d43-4353-b6a0-066ca3031542}" /></worksheet>
 
     <worksheet name="KPI Avg CSAT">
       <layout-options>
@@ -202,7 +202,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{d8514507-d434-48fd-8b5e-7f433eb8461c}" /></worksheet>
+    <simple-id uuid="{2e846793-36b6-48ff-b300-0353b50b0ce2}" /></worksheet>
 
     <worksheet name="KPI Within SLA">
       <layout-options>
@@ -235,7 +235,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{df612697-f621-465f-a777-e17f4cd80581}" /></worksheet>
+    <simple-id uuid="{7cb02d59-a462-4ffd-b5d5-1c4df09e895b}" /></worksheet>
 
     <worksheet name="KPI Pending">
       <layout-options>
@@ -268,7 +268,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{ab7d0a00-a3b8-4341-a679-9773a40971ca}" /></worksheet>
+    <simple-id uuid="{2259f319-78b2-4d2c-abea-811d86072614}" /></worksheet>
 
     <worksheet name="Ticket Volume Trend">
       <layout-options>
@@ -301,7 +301,7 @@
         <rows>[federated.service_tickets].[cd:ticket_id:qk]</rows>
         <cols>[federated.service_tickets].[none:opened_date:ok]</cols>
       </table>
-    <simple-id uuid="{cd4812e1-7827-4911-a05f-c9532f003120}" /></worksheet>
+    <simple-id uuid="{3507bc89-2535-4781-a1fd-22e0a9981311}" /></worksheet>
 
     <worksheet name="Reason Mix">
       <layout-options>
@@ -337,7 +337,7 @@
         <rows>[federated.service_tickets].[none:reason:nk]</rows>
         <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
       </table>
-    <simple-id uuid="{f136fe05-91dd-493e-bbd3-4876a09bc450}" /></worksheet>
+    <simple-id uuid="{4a102150-7c85-45b6-9edd-4d637c4786b3}" /></worksheet>
 
     <worksheet name="Channel Mix">
       <layout-options>
@@ -373,7 +373,7 @@
         <rows>[federated.service_tickets].[none:channel:nk]</rows>
         <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
       </table>
-    <simple-id uuid="{d894f287-3d33-447b-ae46-97f1cb720a89}" /></worksheet>
+    <simple-id uuid="{7f25d658-ed44-48cc-9a55-94fcd7627e2d}" /></worksheet>
 
     <worksheet name="SLA Status Mix">
       <layout-options>
@@ -409,7 +409,7 @@
         <rows>[federated.service_tickets].[none:sla_status:nk]</rows>
         <cols>[federated.service_tickets].[cd:ticket_id:qk]</cols>
       </table>
-    <simple-id uuid="{52706f00-21e0-4e3b-be8f-e57ab1d778b0}" /></worksheet>
+    <simple-id uuid="{05c8cb0f-3af0-40bd-9680-745985101f0c}" /></worksheet>
 
     <worksheet name="Resolve by Priority">
       <layout-options>
@@ -445,7 +445,7 @@
         <rows>[federated.service_tickets].[none:priority:nk]</rows>
         <cols>[federated.service_tickets].[usr:Calculation_Avg_Resolve:qk]</cols>
       </table>
-    <simple-id uuid="{931ba2ee-82e5-412a-a2bc-3c362bfa86fc}" /></worksheet>
+    <simple-id uuid="{0589edbd-d753-4668-88ee-c28775150961}" /></worksheet>
 
     <worksheet name="Breach by Channel">
       <layout-options>
@@ -483,7 +483,7 @@
         <rows>[federated.service_tickets].[none:channel:nk]</rows>
         <cols>[federated.service_tickets].[none:priority:nk]</cols>
       </table>
-    <simple-id uuid="{a9e481d2-0615-4ca3-ae7f-eaf85d1ec7ff}" /></worksheet>
+    <simple-id uuid="{015244ca-b099-4428-8b62-02ef3fe1e073}" /></worksheet>
 
     <worksheet name="KPI Avg Resolve">
       <layout-options>
@@ -516,7 +516,7 @@
         </panes>
         <rows /><cols />
       </table>
-    <simple-id uuid="{e208294e-69b2-4b1c-b19e-73654122788c}" /></worksheet>
+    <simple-id uuid="{331dea69-ccbd-4c1a-b929-ae0097ffe29e}" /></worksheet>
 
     <worksheet name="Within SLA by Region">
       <layout-options>
@@ -552,7 +552,7 @@
         <rows>[federated.service_tickets].[none:region:nk]</rows>
         <cols>[federated.service_tickets].[usr:Calculation_Within_SLA_Pct:qk]</cols>
       </table>
-    <simple-id uuid="{7e29bd5c-6881-4923-bf21-1964cf53d546}" /></worksheet>
+    <simple-id uuid="{c3677432-ef6e-43ed-a2a6-3c0996204d7f}" /></worksheet>
 
     <worksheet name="Open Aging Buckets">
       <layout-options>
@@ -597,7 +597,7 @@
         <rows>[federated.service_tickets].[cd:ticket_id:qk]</rows>
         <cols>[federated.service_tickets].[none:Calculation_Aging_Bucket:nk]</cols>
       </table>
-    <simple-id uuid="{a5f2b828-237e-4fa0-b062-4510745ef3db}" /></worksheet>
+    <simple-id uuid="{bcf6c483-1574-41e3-8a00-308808212329}" /></worksheet>
 
     <worksheet name="Open by Priority">
       <layout-options>
@@ -633,7 +633,7 @@
         <rows>[federated.service_tickets].[none:priority:nk]</rows>
         <cols>[federated.service_tickets].[sum:is_open:qk]</cols>
       </table>
-    <simple-id uuid="{b1b01b54-8274-4d6c-a0ef-d8fe276c0543}" /></worksheet>
+    <simple-id uuid="{1dadb2ec-9900-472c-afe1-fd547a7f212a}" /></worksheet>
 
     <worksheet name="Open Reasons">
       <layout-options>
@@ -669,7 +669,7 @@
         <rows>[federated.service_tickets].[none:reason:nk]</rows>
         <cols>[federated.service_tickets].[sum:is_open:qk]</cols>
       </table>
-    <simple-id uuid="{b4606948-4866-47c1-a7a1-eb01325c434e}" /></worksheet>
+    <simple-id uuid="{97fa9717-4e37-4d9e-9829-b1cc3e5eeb73}" /></worksheet>
 
     <worksheet name="CSAT by Channel">
       <layout-options>
@@ -705,7 +705,7 @@
         <rows>[federated.service_tickets].[none:channel:nk]</rows>
         <cols>[federated.service_tickets].[usr:Calculation_Avg_CSAT:qk]</cols>
       </table>
-    <simple-id uuid="{3fb5a212-51d9-4b5c-8cb2-d7b1566254ef}" /></worksheet>
+    <simple-id uuid="{f0cc8c7a-70cc-47f3-99e6-558dab0903e5}" /></worksheet>
 
   </worksheets>
 
@@ -738,7 +738,7 @@ Ticket volume, CSAT, within-SLA rate, pending — reason and channel mix</run>
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{452a2314-6589-4879-9af7-5bf7603d9f9e}" />
+      <simple-id uuid="{318e3446-d00d-4375-a3e9-1946623b4200}" />
     </dashboard>
 
     <dashboard name="2. SLA Performance">
@@ -766,7 +766,7 @@ Within / beyond / pending SLA, resolve hours by priority, breach patterns, regio
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{246593e2-cfea-45e1-98ea-5be59930a806}" />
+      <simple-id uuid="{c723dc56-f6ac-44bb-9e11-396adfb5e348}" />
     </dashboard>
 
     <dashboard name="3. Pending and Aging">
@@ -792,13 +792,13 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
         </zone>
       </zones>
       <devicelayouts><devicelayout name="Desktop"><size maxheight="900" maxwidth="1400" minheight="900" minwidth="1400" sizing-mode="fixed" /></devicelayout></devicelayouts>
-      <simple-id uuid="{2db68ba0-d129-4387-95cc-c82bbcc5e1bd}" />
+      <simple-id uuid="{683d9c5f-47ee-455d-8037-55b6dfcb2782}" />
     </dashboard>
   </dashboards>
 
   <windows source-height="30">
 
-    <window class="worksheet" name="KPI Ticket Volume">
+    <window class="worksheet" maximized="false" name="KPI Ticket Volume">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -813,9 +813,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{156f68e2-1878-4036-998b-8900310104d6}" /></window>
+    <simple-id uuid="{e6688ab9-291c-4288-a92b-9f11547605cd}" /></window>
 
-    <window class="worksheet" name="KPI Avg CSAT">
+    <window class="worksheet" maximized="false" name="KPI Avg CSAT">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -830,9 +830,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{979a3153-5a53-484e-9569-f23ecaa359ee}" /></window>
+    <simple-id uuid="{34b3f938-4cab-4f3b-9fd7-dd2edf50de58}" /></window>
 
-    <window class="worksheet" name="KPI Within SLA">
+    <window class="worksheet" maximized="false" name="KPI Within SLA">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -847,9 +847,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{2746b9f4-0e06-414b-9099-9662241ce907}" /></window>
+    <simple-id uuid="{cd2723e2-59e0-4c5f-bb69-63e88064f7bd}" /></window>
 
-    <window class="worksheet" name="KPI Pending">
+    <window class="worksheet" maximized="false" name="KPI Pending">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -864,9 +864,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{2d700eca-23c0-40c0-b9e1-ef995d15442b}" /></window>
+    <simple-id uuid="{869e9f19-ea74-425a-8a47-5d93f2da1f11}" /></window>
 
-    <window class="worksheet" name="Ticket Volume Trend">
+    <window class="worksheet" maximized="false" name="Ticket Volume Trend">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -881,9 +881,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{6c2dbc96-1358-412e-9394-a3a2dcfd9615}" /></window>
+    <simple-id uuid="{4b14d9d9-d2d6-44e7-a0a1-72e9eba3978c}" /></window>
 
-    <window class="worksheet" name="Reason Mix">
+    <window class="worksheet" maximized="false" name="Reason Mix">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -898,9 +898,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{e24949e0-0499-4cc8-ac5c-32c5080ddb91}" /></window>
+    <simple-id uuid="{5729d7a6-f263-45f7-9f55-0ca39565a71f}" /></window>
 
-    <window class="worksheet" name="Channel Mix">
+    <window class="worksheet" maximized="false" name="Channel Mix">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -915,9 +915,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{da7bd167-059f-46d9-999d-16709a3d212d}" /></window>
+    <simple-id uuid="{7c5da0bb-0fd6-43d4-926b-efd9529940cb}" /></window>
 
-    <window class="worksheet" name="SLA Status Mix">
+    <window class="worksheet" maximized="false" name="SLA Status Mix">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -932,9 +932,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{94677eef-edba-42fb-9253-2c9153eb0867}" /></window>
+    <simple-id uuid="{704ade30-36af-40e3-9800-31005c10388b}" /></window>
 
-    <window class="worksheet" name="Resolve by Priority">
+    <window class="worksheet" maximized="false" name="Resolve by Priority">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -949,9 +949,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{bd4e7d9b-a004-47cd-8025-984126013a69}" /></window>
+    <simple-id uuid="{06001d68-e5fd-4b05-913d-dc221484aa20}" /></window>
 
-    <window class="worksheet" name="Breach by Channel">
+    <window class="worksheet" maximized="false" name="Breach by Channel">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -966,9 +966,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{f9a836d9-3355-4798-a0eb-e21d32a29348}" /></window>
+    <simple-id uuid="{ca01be2d-283c-44aa-bae9-875cb2f861cd}" /></window>
 
-    <window class="worksheet" name="KPI Avg Resolve">
+    <window class="worksheet" maximized="false" name="KPI Avg Resolve">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -983,9 +983,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{d698cd8a-ddef-45e4-ac61-6ba97b5dc5e3}" /></window>
+    <simple-id uuid="{4f0f8945-f409-40ca-a03f-fff7f1cd81d4}" /></window>
 
-    <window class="worksheet" name="Within SLA by Region">
+    <window class="worksheet" maximized="false" name="Within SLA by Region">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -1000,9 +1000,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{fb7ea14d-28bf-462d-9763-24ef6d1f1edb}" /></window>
+    <simple-id uuid="{6ec4cb86-9311-4355-89a3-75d3ce228174}" /></window>
 
-    <window class="worksheet" name="Open Aging Buckets">
+    <window class="worksheet" maximized="false" name="Open Aging Buckets">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -1017,9 +1017,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{a7f8559b-339d-40d1-a871-a30ca986691a}" /></window>
+    <simple-id uuid="{b1a9d604-77e4-4cc4-a406-f99552f3bf42}" /></window>
 
-    <window class="worksheet" name="Open by Priority">
+    <window class="worksheet" maximized="false" name="Open by Priority">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -1034,9 +1034,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{747cd5fc-bf12-4b98-bf57-ffd7295e6da0}" /></window>
+    <simple-id uuid="{0ce5bfbc-2015-4b93-b878-d27f79dfdd0a}" /></window>
 
-    <window class="worksheet" name="Open Reasons">
+    <window class="worksheet" maximized="false" name="Open Reasons">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -1051,9 +1051,9 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{24a23a94-8f02-4451-96ee-c0eaeae314fa}" /></window>
+    <simple-id uuid="{ec8f9b79-4157-4453-8f9d-ce136c145aa4}" /></window>
 
-    <window class="worksheet" name="CSAT by Channel">
+    <window class="worksheet" maximized="false" name="CSAT by Channel">
       <cards>
         <edge name="left">
           <strip size="160">
@@ -1068,7 +1068,7 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
           <strip size="30"><card type="title" /></strip>
         </edge>
       </cards>
-    <simple-id uuid="{71442f79-cbdc-478e-9e0d-87ec98c33363}" /></window>
+    <simple-id uuid="{dbd5bc8e-9a80-4bf2-8e0c-58b33bdcdccc}" /></window>
 
     <window class="dashboard" maximized="true" name="1. Overview">
       <viewpoints>
@@ -1082,7 +1082,7 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
         <viewpoint name="Channel Mix" />
       </viewpoints>
       <active id="-1" />
-    <simple-id uuid="{b0b6c8bb-3f28-42b0-8b3b-8f411883378a}" /></window>
+    <simple-id uuid="{9703154e-c84d-4f34-a60a-bdf6e1d67250}" /></window>
     <window class="dashboard" name="2. SLA Performance">
       <viewpoints>
         <viewpoint name="SLA Status Mix" />
@@ -1092,7 +1092,7 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
         <viewpoint name="Within SLA by Region" />
       </viewpoints>
       <active id="-1" />
-    <simple-id uuid="{24eb9f70-f55d-4ed9-8ff9-0af98a9e361f}" /></window>
+    <simple-id uuid="{d4932ade-bf15-4ac9-a43a-00a297ff0962}" /></window>
     <window class="dashboard" name="3. Pending and Aging">
       <viewpoints>
         <viewpoint name="Open Aging Buckets" />
@@ -1100,6 +1100,6 @@ Open-queue age buckets (Aging Threshold Hours parameter), priority backlog, open
         <viewpoint name="Open Reasons" />
       </viewpoints>
       <active id="-1" />
-    <simple-id uuid="{c7f5bd18-d290-4ed0-a07e-4889a41abf97}" /></window>
+    <simple-id uuid="{c4d3a589-4531-485d-a7f6-68b93474b5c5}" /></window>
   </windows>
 </workbook>

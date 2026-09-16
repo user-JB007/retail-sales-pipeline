@@ -2,6 +2,7 @@
 """Author Retail Tableau workbooks (.twb) and package as .twbx.
 
 Produces:
+  tableau/workbooks/Retail_Ops_Dashboard.twbx  (primary: Sales + Service pages)
   tableau/workbooks/Retail_Sales_Report.twbx
   tableau/workbooks/Retail_Service_Satisfaction_Report.twbx
 
@@ -337,11 +338,13 @@ def heatmap_sheet(ds: str, caption: str, name: str, title: str, row_dim: str, co
 """
 
 
-def sheet_windows_xml(names: list[str]) -> str:
+def sheet_windows_xml(names: list[str], *, hidden: bool = False) -> str:
+    """Emit worksheet <window> entries. When hidden=True, hide sheet tabs in Desktop."""
     out = ""
+    hidden_attr = " hidden='true'" if hidden else ""
     for sn in names:
         out += f"""
-    <window class='worksheet' name='{esc(sn)}'>
+    <window class='worksheet' maximized='false'{hidden_attr} name='{esc(sn)}'>
       <cards>
         <edge name='left'>
           <strip size='160'>
@@ -1126,6 +1129,256 @@ def create_service_twb() -> str:
     return xml
 
 
+
+def _clone(el: ET.Element) -> ET.Element:
+    return ET.fromstring(ET.tostring(el, encoding="unicode"))
+
+
+def _dashboard_xml(
+    name: str,
+    title_main: str,
+    title_sub: str,
+    subtitle: str,
+    zones: list[tuple[str, int, int, int, int]],
+    banner_id: int = 1,
+) -> str:
+    """zones: list of (sheet_name, x, y, w, h). Fixed 1400x900 canvas."""
+    zone_lines = [
+        f"          <zone h='50' id='{banner_id}' type-name='text' w='1360' x='20' y='10'>",
+        "            <formatted-text>",
+        f"              <run fontcolor='#0B3D5C' fontname='Arial' fontsize='18' bold='true'>{esc(title_main)}</run>",
+        f"              <run fontcolor='#1F2A37' fontname='Arial' fontsize='16' bold='true'>  |  {esc(title_sub)}</run>",
+        f"              <run fontcolor='#5B6B7C' fontname='Arial' fontsize='10'>\\n{esc(subtitle)}</run>",
+        "            </formatted-text>",
+        "          </zone>",
+    ]
+    zid = banner_id + 1
+    for sheet, x, y, w, h in zones:
+        zone_lines.append(
+            f"          <zone h='{h}' id='{zid}' name='{esc(sheet)}' w='{w}' x='{x}' y='{y}' />"
+        )
+        zid += 1
+    zones_body = "\n".join(zone_lines)
+    return f"""
+    <dashboard name='{esc(name)}'>
+      <style>
+        <style-rule element='dashboard'>
+          <format attr='background-color' value='#F4F6F8' />
+        </style-rule>
+      </style>
+      <size maxheight='900' maxwidth='1400' minheight='900' minwidth='1400' sizing-mode='fixed' />
+      <zones>
+        <zone h='900' id='{banner_id - 1 if banner_id > 0 else 0}' type-name='layout-basic' w='1400' x='0' y='0'>
+{zones_body}
+        </zone>
+      </zones>
+      <devicelayouts />
+{simple_id_xml()}
+    </dashboard>
+"""
+
+
+def create_ops_twb() -> str:
+    """Combined Retail Ops suite: two primary dashboards (Sales, Service).
+
+    Reuses worksheets/datasources from the sales + service builders, hides
+    individual KPI/chart sheet windows so Desktop tabs emphasize the two pages.
+    """
+    sales_root = ET.fromstring(create_sales_twb())
+    service_root = ET.fromstring(create_service_twb())
+
+    # --- Parameters: merge Top N Stores + Aging Threshold Hours ---
+    params = _clone(sales_root.find("./datasources/datasource[@name='Parameters']"))
+    svc_params = service_root.find("./datasources/datasource[@name='Parameters']")
+    for col in list(svc_params.findall("column")):
+        name = col.get("name")
+        if params.find(f"./column[@name='{name}']") is None:
+            params.append(_clone(col))
+
+    # --- Datasources: Parameters + all non-Parameter sources from both ---
+    ds_xml_parts = [ET.tostring(params, encoding="unicode")]
+    seen_ds = {"Parameters"}
+    for root in (sales_root, service_root):
+        for ds in root.findall("./datasources/datasource"):
+            name = ds.get("name")
+            if name in seen_ds:
+                continue
+            seen_ds.add(name)
+            ds_xml_parts.append(ET.tostring(ds, encoding="unicode"))
+
+    # --- Worksheets: all unique by name (sales first, then service) ---
+    ws_xml_parts: list[str] = []
+    sheet_names: list[str] = []
+    seen_ws: set[str] = set()
+    for root in (sales_root, service_root):
+        for ws in root.findall("./worksheets/worksheet"):
+            name = ws.get("name")
+            if name in seen_ws:
+                continue
+            seen_ws.add(name)
+            sheet_names.append(name)
+            # Drop trailing simple-id; ensure_content_models will re-add braced ones
+            sid = ws.find("simple-id")
+            if sid is not None:
+                ws.remove(sid)
+            ws_xml_parts.append(ET.tostring(ws, encoding="unicode"))
+
+    # Sales page zones (1400×900)
+    # Top KPIs | Middle trend+region | Bottom channel+top stores
+    sales_zones = [
+        ("KPI Net Revenue", 20, 70, 320, 90),
+        ("KPI Orders", 360, 70, 320, 90),
+        ("KPI AOV", 700, 70, 320, 90),
+        ("KPI Gross Margin", 1040, 70, 340, 90),
+        ("Revenue Trend", 20, 175, 760, 340),
+        ("Revenue by Region", 800, 175, 580, 340),
+        ("Channel Revenue", 20, 530, 680, 340),
+        ("Top Stores by Revenue", 720, 530, 660, 340),
+    ]
+    # Service page: 5 KPIs | trend+reason | aging+SLA region+open reasons
+    service_zones = [
+        ("KPI Ticket Volume", 20, 70, 256, 90),
+        ("KPI Avg CSAT", 296, 70, 256, 90),
+        ("KPI Within SLA", 572, 70, 256, 90),
+        ("KPI Pending", 848, 70, 256, 90),
+        ("KPI Avg Resolve", 1124, 70, 256, 90),
+        ("Ticket Volume Trend", 20, 175, 700, 340),
+        ("Reason Mix", 740, 175, 320, 340),
+        ("Channel Mix", 1080, 175, 300, 340),
+        ("Open Aging Buckets", 20, 530, 440, 340),
+        ("Within SLA by Region", 480, 530, 440, 340),
+        ("Open Reasons", 940, 530, 440, 340),
+    ]
+
+    sales_dash = _dashboard_xml(
+        "Sales",
+        "Retail Ops",
+        "Sales",
+        "Net revenue, orders, AOV, margin — trend, region, channel, top stores",
+        sales_zones,
+        banner_id=101,
+    ).replace("id='100'", "id='100'")  # layout-basic id from banner_id-1 = 100
+
+    service_dash = _dashboard_xml(
+        "Service",
+        "Retail Ops",
+        "Service & SLA",
+        "Ticket volume, CSAT, within-SLA, pending, resolve — aging and open reasons",
+        service_zones,
+        banner_id=201,
+    )
+
+    # Fix layout-basic ids explicitly
+    sales_dash = sales_dash.replace(
+        "<zone h='900' id='100' type-name='layout-basic'",
+        "<zone h='900' id='100' type-name='layout-basic'",
+        1,
+    )
+    # banner_id=201 => layout id 200
+    service_dash = service_dash.replace(
+        f"<zone h='900' id='{201 - 1}' type-name='layout-basic'",
+        "<zone h='900' id='200' type-name='layout-basic'",
+        1,
+    )
+
+    actions = """
+  <actions>
+    <action caption='Filter Sales by Region' name='[Action_Ops_Filter_Region]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Sales' type='sheet' worksheet='Revenue by Region' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='Revenue by Region' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='Sales' />
+      </command>
+    </action>
+    <action caption='Filter Sales by Store' name='[Action_Ops_Filter_Store]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Sales' type='sheet' worksheet='Top Stores by Revenue' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='Top Stores by Revenue' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='Sales' />
+      </command>
+    </action>
+    <action caption='Filter Service by Reason' name='[Action_Ops_Filter_Reason]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Service' type='sheet' worksheet='Reason Mix' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='Reason Mix' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='Service' />
+      </command>
+    </action>
+    <action caption='Filter Service by Region' name='[Action_Ops_Filter_Svc_Region]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Service' type='sheet' worksheet='Within SLA by Region' />
+      <command command='tsc:tsl-filter'>
+        <param name='exclude' value='Within SLA by Region' />
+        <param name='special-fields' value='all' />
+        <param name='target' value='Service' />
+      </command>
+    </action>
+  </actions>
+"""
+
+    sales_views = "\n".join(
+        f"        <viewpoint name='{esc(n)}' />"
+        for n, *_ in sales_zones
+    )
+    service_views = "\n".join(
+        f"        <viewpoint name='{esc(n)}' />"
+        for n, *_ in service_zones
+    )
+
+    xml = f"""<?xml version='1.0' encoding='utf-8' ?>
+<!-- Retail Ops Dashboard — Sales + Service (two-page suite) -->
+<!-- Built for Tableau Desktop / Tableau Public 2022+ -->
+<workbook original-version='18.1' source-build='2022.3.0 (20223.22.0908.1640)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+
+  <datasources>
+{''.join(ds_xml_parts)}
+  </datasources>
+{actions}
+  <worksheets>
+{''.join(ws_xml_parts)}
+  </worksheets>
+
+  <dashboards>
+{sales_dash}
+{service_dash}
+  </dashboards>
+
+  <windows source-height='30'>
+{sheet_windows_xml(sheet_names, hidden=True)}
+    <window class='dashboard' maximized='true' name='Sales'>
+      <viewpoints>
+{sales_views}
+      </viewpoints>
+      <active id='-1' />
+    </window>
+    <window class='dashboard' name='Service'>
+      <viewpoints>
+{service_views}
+      </viewpoints>
+      <active id='-1' />
+    </window>
+  </windows>
+</workbook>
+"""
+    return xml
+
+
+
 def package_twbx(twb_path: Path, twbx_path: Path, csv_files: list[Path], hyper_files: list[Path]) -> None:
     if twbx_path.exists():
         twbx_path.unlink()
@@ -1156,6 +1409,7 @@ def build_one(name: str, xml: str, csvs: list[str], hypers: list[str]) -> Path:
     for ws in root2.findall("./worksheets/worksheet"):
         if ws.find("simple-id") is None:
             raise SystemExit(f"worksheet missing simple-id: {ws.get('name')}")
+    ws_names = {ws.get("name") for ws in root2.findall("./worksheets/worksheet")}
     for dash in root2.findall("./dashboards/dashboard"):
         tags = [c.tag for c in list(dash)]
         for req in ("datasources", "zones", "devicelayouts", "simple-id"):
@@ -1166,6 +1420,21 @@ def build_one(name: str, xml: str, csvs: list[str], hypers: list[str]) -> Path:
             raise SystemExit(f"dashboard {dash.get('name')}: datasources must precede zones")
         if tags.index("devicelayouts") < tags.index("zones"):
             raise SystemExit(f"dashboard {dash.get('name')}: devicelayouts must follow zones")
+        dl = dash.find("devicelayouts")
+        if dl is None or dl.find("devicelayout[@name='Desktop']") is None:
+            raise SystemExit(f"dashboard {dash.get('name')}: missing Desktop device layout")
+        for zone in dash.findall(".//zone"):
+            zname = zone.get("name")
+            if zname and zname not in ws_names and zone.get("type-name") not in ("layout-basic", "text", "filter", "legend", "paramctrl", None):
+                # named worksheet zones must reference real worksheets
+                if zone.get("type-name") is None and zname not in ws_names:
+                    raise SystemExit(f"dashboard {dash.get('name')}: zone references unknown worksheet {zname!r}")
+            if zname and zone.get("type-name") is None and zname not in ws_names:
+                raise SystemExit(f"dashboard {dash.get('name')}: zone references unknown worksheet {zname!r}")
+    for sid in root2.findall(".//simple-id"):
+        u = sid.get("uuid") or ""
+        if not (u.startswith("{") and u.endswith("}")):
+            raise SystemExit(f"unbraced simple-id uuid: {u!r}")
     twb_path.write_text(xml_out, encoding="utf-8")
     print(f"Wrote {twb_path} ({twb_path.stat().st_size} bytes)")
     package_twbx(
@@ -1183,6 +1452,18 @@ def build_one(name: str, xml: str, csvs: list[str], hypers: list[str]) -> Path:
 
 
 def main() -> None:
+    build_one(
+        "Retail_Ops_Dashboard",
+        create_ops_twb(),
+        [
+            "mart_daily_sales_by_store.csv",
+            "mart_daily_sales_by_category.csv",
+            "mart_channel_mix.csv",
+            "mart_product_performance.csv",
+            "mart_service_performance.csv",
+        ],
+        ["daily_sales_by_store.hyper", "service_performance.hyper"],
+    )
     build_one(
         "Retail_Sales_Report",
         create_sales_twb(),
